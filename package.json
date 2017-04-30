@@ -1,0 +1,44 @@
+{
+    "name": "html-webpack-inline-svg-plugin",
+    "version": "0.0.1",
+    "description": "Embed svg inline when using the html webpack plugin",
+    "main": "index.js",
+    "files": [
+        "index.js"
+    ],
+    "scripts": {
+        "prepublish": "npm run test",
+        "test": "jasmine",
+        "debug": "node-debug jasmine"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/thegc/html-webpack-inline-svg-plugin.git"
+    },
+    "keywords": [
+        "webpack",
+        "plugin",
+        "html-webpack-plugin",
+        "inline",
+        "svg"
+    ],
+    "author": "Guy Campbell (https://github.com/thegc)",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/thegc/html-webpack-inline-svg-plugin/issues"
+    },
+    "homepage": "https://github.com/thegc/html-webpack-inline-svg-plugin",
+    "devDependencies": {
+        "css-loader": "^0.25.0",
+        "extract-text-webpack-plugin": "^1.0.1",
+        "html-webpack-plugin": "^2.16.0",
+        "jasmine": "^2.4.1",
+        "rimraf": "^2.5.2",
+        "semistandard": "^7.0.5",
+        "style-loader": "^0.13.1",
+        "webpack": "^1.13.0"
+    },
+    "dependencies": {
+        "cheerio": "^0.22.0"
+    }
+}
