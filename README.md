@@ -1,6 +1,6 @@
 Inline SVG extension for the HTML Webpack Plugin
 ========================================
-[![npm version](https://badge.fury.io/js/html-webpack-inline-svg-plugin.svg)](https://badge.fury.io/js/html-webpack-inline-svg-plugin) [![Build status](https://travis-ci.org/thegc/html-webpack-inline-svg-plugin.svg?branch=master)](https://travis-ci.org/thegc/html-webpack-inline-svg-plugin) [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/Flet/semistandard)
+[![npm version](https://badge.fury.io/js/html-webpack-inline-svg-plugin.svg)](https://badge.fury.io/js/html-webpack-inline-svg-plugin) [![Build status](https://travis-ci.org/thegc/html-webpack-inline-svg-plugin?branch=master)](https://travis-ci.org/thegc/html-webpack-inline-svg-plugin)
 
 Allows you to inline SVGs that are parsed by [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin).
 
