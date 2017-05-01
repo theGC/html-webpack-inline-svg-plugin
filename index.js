@@ -6,7 +6,7 @@ const chalk = require('chalk')
 const cheerio = require('cheerio')
 const fs = require('fs')
 const SVGO = require('svgo')
-const svgoDefaultConfig = require(path.resolve(__dirname, 'svgo-config'))
+const svgoDefaultConfig = require(path.resolve(__dirname, 'svgo-config.js'))
 const _ = require('lodash')
 
 let $
