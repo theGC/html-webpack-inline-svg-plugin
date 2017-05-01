@@ -2,8 +2,12 @@
 
 const assert = require('assert')
 const path = require('path')
+const chalk = require('chalk')
 const cheerio = require('cheerio')
 const fs = require('fs')
+const SVGO = require('svgo')
+const svgoDefaultConfig = require('./svgo-config')
+const _ = require('lodash')
 
 let $
 
@@ -55,7 +59,12 @@ HtmlWebpackInlineSVGPlugin.prototype.apply = function (compiler) {
                 })
                 .catch((err) => {
 
-                    console.log(err)
+                    const errorMessage =
+                        err.message ?
+                        err.message :
+                        'One of your inline SVGs hit an error, likely caused by the file not being found'
+
+                    console.error(chalk.red(errorMessage))
 
                 })
 
@@ -73,11 +82,35 @@ HtmlWebpackInlineSVGPlugin.prototype.processImage = (htmlPluginData, imgObject) 
 
             if (err) reject(err)
 
-            $(imgObject.img).after(data)
+            // build the custom config
+            const userConfig =
+                htmlPluginData.plugin.options.svgoConfig &&
+                _.isObject(htmlPluginData.plugin.options.svgoConfig) ?
+                htmlPluginData.plugin.options.svgoConfig :
+                {}
 
-            $(imgObject.img).remove()
+            const configObj = Object.assign(svgoDefaultConfig, userConfig)
 
-            resolve(data)
+            const config = {}
+
+            // pass all objects to the config.plugins array
+            config.plugins = _.map(configObj, (value, key) => ({ [key]: value }));
+
+            const svgo = new SVGO(config)
+
+            svgo.optimize(data, (result) => {
+
+                if (result.error) reject(result.error)
+
+                const optimisedSVG = result.data
+
+                $(imgObject.img).after(optimisedSVG)
+
+                $(imgObject.img).remove()
+
+                resolve(optimisedSVG)
+
+            })
 
         })
 
