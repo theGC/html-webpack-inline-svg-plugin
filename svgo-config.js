@@ -1,6 +1,6 @@
 /**
  * export default set of config options for SVGO
- * overridden when calling the module via the svgoConfig param
+ * values are overridden by setting the svgoConfig param on html-webpack-plugin config
  *
  */
 
