@@ -95,4 +95,25 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
     })
 
+    it('do not html decode content', function (done) {
+
+        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+
+        fs.readFile(htmlFile, 'utf8', function (er, data) {
+
+            expect(er).toBeFalsy()
+
+            var $ = cheerio.load(data, {
+                decodeEntities: false
+            })
+
+            expect($('#do-not-decode').html())
+                .toBe('<?= $foo->bar; ?>')
+
+            done()
+
+        })
+
+    })
+
 })
