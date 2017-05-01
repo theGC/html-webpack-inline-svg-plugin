@@ -4,3 +4,5 @@ node_js:
   - "5"
 script:
   - npm test
+notifications:
+  slack: thebigsurf:EjL4xVZdsZgFkQ8MaBYEjAkp
