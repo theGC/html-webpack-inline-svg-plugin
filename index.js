@@ -24,7 +24,9 @@ HtmlWebpackInlineSVGPlugin.prototype.apply = function (compiler) {
 
         compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
 
-            $ = cheerio.load(htmlPluginData.html)
+            $ = cheerio.load(htmlPluginData.html, {
+                decodeEntities: false
+            })
 
             // find img tags with an inline attribute
             const $imgs = $('img[inline]')
