@@ -87,7 +87,25 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
             var $ = cheerio.load(data)
 
-            expect($('img[inline]').length).toBe(0)
+            expect($('#replace-me').length).toBe(0)
+
+            done()
+
+        })
+
+    })
+
+    it('should ignore images that are not svg', function (done) {
+
+        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+
+        fs.readFile(htmlFile, 'utf8', function (er, data) {
+
+            expect(er).toBeFalsy()
+
+            var $ = cheerio.load(data)
+
+            expect($('#not-an-svg').length).toBe(1)
 
             done()
 
