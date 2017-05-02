@@ -37,6 +37,36 @@ plugins: [
 ]
 ```
 
+Add `img` tags with `inline` attribute and `.svg` file as src to your template/s that the html-webpack-plugin is processing (the default is `index.html`).
+
+```html
+<!-- Works: below img tag will be removed and replaced by the content of the svg in its src -->
+<img inline src="static/icons.svg">
+
+<!-- Ignored: this img will not be touched as it has no inline attribute -->
+<img src="static/foo.svg">
+
+<!-- Broken: this plugin will ignore this src as it is not an svg -->
+<img inline src="static/i-will-be-ignored.png">
+```
+
+Getting to your SVGs
+-----------
+
+References to your `*.svg` files within the `img` tags src should be relative to your project root, this is usually the directory your `package.json` file sits in:
+
+```
+my-project
+-- package.json
+-- <node_modules>
+-- <static>
+---- icons.svg
+---- foo.svg
+---- ...
+```
+
+With the above structure inlining icons.svg would look like: `<img inline src="static/icons.svg">`
+
 Config
 -----------
 To configure SVGO (module used to optimise your SVGs), add an `svgoConfig` object to your `html-webpack-plugin` config:
