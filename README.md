@@ -55,8 +55,6 @@ plugins: [
 
 For a full list of the SVGO config (default) params we are using check out: [svgo-config.js](svgo-config.js). The config you set is merged with our defaults, it does not replace it.
 
-> Please note: setting `cleanupIDs: true` will currently break the jasmine tests we have set up. The plugin makes a lot of assumptions on how your SVGs should be optimised for output. It may be that some of the tests we have set up clash with real use cases, but when building this plugin it was assumed it would predominately be used to inline SVGs for use instead of icon fonts. Please raise an issue if this is causing problems...
-
 Known Issues
 -----------
 
