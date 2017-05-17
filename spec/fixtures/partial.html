@@ -1,34 +1,13 @@
-<!DOCTYPE html>
-<html>
+            </p>
 
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>Inline SVG Tests index</title>
-        <style>
-
-            .icon {
-                display: inline-block;
-                width: 1em;
-                height: 1em;
-                stroke-width: 0;
-                stroke: currentColor;
-                fill: currentColor;
-            }
-
-        </style>
-
-        <script src="test.js"></script>
-
-    </head>
-
-    <body>
+        </div>
 
         <div>
             <p>should not touch this: <img width="20px" height="auto" class="leave-me" src="../spec/fixtures/images/face.svg"></p>
             <p>
                 <span>if below SVG is inlined correctly we can reference its content:</span>
                 <svg class="icon mood-good"><use xlink:href="#icon-mood-good"></use></svg>
+                <img id="find-and-replace-me" inline src="spec/fixtures/images/face.svg">
             </p>
         </div>
 
@@ -37,10 +16,6 @@
         <img id="not-an-svg" inline src="spec/fixtures/images/not-an-svg.png">
 
         <div id="do-not-decode"><?= $foo->bar; ?></div>
-
-        should output broken tags</p>
-
-        <p>should output unclosed tags
 
     </body>
 

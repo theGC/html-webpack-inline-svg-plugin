@@ -29,6 +29,10 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
                 new HtmlWebpackPlugin({
                     template: path.join(__dirname, 'fixtures', 'index.html'),
                 }),
+                new HtmlWebpackPlugin({
+                    filename: path.resolve(OUTPUT_DIR, 'partial.html'),
+                    template: path.join(__dirname, 'fixtures', 'partial.html'),
+                }),
                 new HtmlWebpackInlineSVGPlugin(),
             ],
         }, function (err) {
@@ -122,11 +126,54 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
             expect(er).toBeFalsy()
 
             var $ = cheerio.load(data, {
-                decodeEntities: false
+                decodeEntities: false,
             })
 
             expect($('#do-not-decode').html())
                 .toBe('<?= $foo->bar; ?>')
+
+            done()
+
+        })
+
+    })
+
+    it('do not touch broken tags', function (done) {
+
+        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+
+        fs.readFile(htmlFile, 'utf8', function (er, data) {
+
+            expect(er).toBeFalsy()
+
+            var re1 = /should output broken tags<\/p>/gi;
+
+            expect(data.match(re1))
+                .not.toBe(null)
+
+            var re2 = /<p>should output unclosed tags/gi;
+
+            expect(data.match(re2))
+                .not.toBe(null)
+
+            done()
+
+        })
+
+    })
+
+    it('allow partials to have broken tags', function (done) {
+
+        var htmlFile = path.resolve(OUTPUT_DIR, 'partial.html')
+
+        fs.readFile(htmlFile, 'utf8', function (er, data) {
+
+            expect(er).toBeFalsy()
+
+            const dataSquashed = data.replace(/\s/g,'')
+
+            expect(dataSquashed.startsWith('<\/p><\/div>'))
+                .toBe(true)
 
             done()
 
