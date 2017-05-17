@@ -3,7 +3,6 @@
 const assert = require('assert')
 const path = require('path')
 const chalk = require('chalk')
-const cheerio = require('cheerio')
 const parse5 = require('parse5')
 const _ = require('lodash')
 const fs = require('fs')
