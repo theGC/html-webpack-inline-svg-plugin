@@ -88,5 +88,5 @@ For a full list of the SVGO config (default) params we are using check out: [svg
 Known Issues
 -----------
 
-* Cheerio replaces single quotes with doubles. This can cause issues with languages that allow you to combine them `<?php echo "<a id='i-cause-500-errors'>broken link</a>" ?>`. There is a [long standing PR](https://github.com/cheeriojs/dom-serializer/pull/25) which seems to of been ignored / rejected. Therefore for now just adjust your code to remove the combination of different quotes.
+* none currently
 
