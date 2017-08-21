@@ -81,6 +81,24 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
     })
 
+    it('should inline deep imgs with inline attribute', function (done) {
+        
+        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+
+        fs.readFile(htmlFile, 'utf8', function (er, data) {
+
+            expect(er).toBeFalsy()
+
+            var $ = cheerio.load(data)
+
+            expect($('svg#deep-inline-me').length).toBe(1)
+
+            done()
+
+        })
+
+    })
+
     it('should remove img tags with inline attribute', function (done) {
 
         var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
