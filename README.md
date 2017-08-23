@@ -98,3 +98,13 @@ Known Issues
 
 * none currently
 
+Contribution
+-----------
+
+You're free to contribute to this project by submitting issues and/or pull requests. This project is test-driven, so keep in mind that every change and new feature should be covered by tests.
+
+License
+-----------
+
+This project is licensed under [MIT](https://github.com/theGC/html-webpack-inline-svg-plugin/blob/master/LICENSE).
+
