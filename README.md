@@ -85,6 +85,14 @@ plugins: [
 
 For a full list of the SVGO config (default) params we are using check out: [svgo-config.js](svgo-config.js). The config you set is merged with our defaults, it does not replace it.
 
+Features
+-----------
+
+* Optimises / minimizes the output SVG
+* Allows for deep nested SVGs
+* Ignores broken tags - incase you are outputting templates for various parts of the page
+* Performs no html decoding so supports language tags, i.e. <?php echo 'foo bar'; ?>
+
 Known Issues
 -----------
 

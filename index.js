@@ -66,31 +66,49 @@ HtmlWebpackInlineSVGPlugin.prototype.processImages = function (html) {
             locationInfo: true
         })
 
+        // grab the images to process from the original DOM fragment
         const inlineImages = this.getInlineImages(documentFragment)
 
-        if (!inlineImages || !inlineImages.length) return resolve(html)
+        // if we have no inlined images return the html
+        if (!inlineImages.length) return resolve(html)
 
-        let processedImage = this.processImage(html)
+        // process the imageNodes
+        this.updateHTML(html, inlineImages)
+            .then((html) => resolve(html))
+            .catch((err) => {
 
-        // run the Promises in a synchronous order
-        // allows us to ensure we have completed processing of an inline image before the next ones Promise is called (via then chaining)
-        for (let i = inlineImages.length - 1; i >= 0; i--) {
+                console.log(chalk.underline.red('processImages hit error'))
+                console.log(chalk.red(err))
 
-            processedImage = processedImage
-                .then((html) => {
+                reject(err)
 
-                    // if we have more inline images then return the next Promise
-                    if (i > 0) return this.processImage(html)
-
-                    // else resolve this Promise
-                    return resolve(html)
-
-                })
-                .catch((err) => reject(err))
-
-        }
+            })
 
     })
+
+}
+
+
+/**
+ * run the Promises in a synchronous order
+ * allows us to ensure we have completed processing of an inline image
+ * before the next ones Promise is called (via then chaining)
+ * @param {object} html
+ * @param {array} inlineImages
+ * @returns {Promise}
+ *
+ */
+HtmlWebpackInlineSVGPlugin.prototype.updateHTML = function (html, inlineImages) {
+
+    return inlineImages.reduce((promise, imageNode) => {
+
+        return promise.then((html) => {
+
+            return this.processImage(html)
+
+        })
+
+    }, Promise.resolve(html))
 
 }
 
@@ -109,7 +127,7 @@ HtmlWebpackInlineSVGPlugin.prototype.processImage = function (html) {
             locationInfo: true,
         })
 
-        const inlineImage = this.getInlineImage(documentFragment)
+        const inlineImage = this.getFirstInlineImage(documentFragment)
 
         if (inlineImage) {
 
@@ -148,13 +166,9 @@ HtmlWebpackInlineSVGPlugin.prototype.getInlineImages = function (documentFragmen
 
         documentFragment.childNodes.forEach((childNode) => {
 
-            if (childNode.nodeName === 'img') {
+            if (this.isNodeValidInlineImage(childNode)) {
 
-                if (_.filter(childNode.attrs, { name: 'inline' }).length) {
-
-                    inlineImages.push(childNode)
-
-                }
+                inlineImages.push(childNode)
 
             } else {
 
@@ -174,40 +188,54 @@ HtmlWebpackInlineSVGPlugin.prototype.getInlineImages = function (documentFragmen
 /**
  * return the first inline image or false if none
  * @param {Object} documentFragment - parse5 processed html
- * @returns {boolean|Object}
+ * @returns {null|Object} - null if no inline image - parse5 documentFragment if there is
  *
  */
-HtmlWebpackInlineSVGPlugin.prototype.getInlineImage = function (documentFragment) {
+HtmlWebpackInlineSVGPlugin.prototype.getFirstInlineImage = function (documentFragment) {
 
-    let inlineImage = false
+    const inlineImages = this.getInlineImages(documentFragment)
 
-    if (documentFragment.childNodes && documentFragment.childNodes.length) {
+    if (!inlineImages.length) return null
 
-        documentFragment.childNodes.some((childNode) => {
+    return inlineImages[0]
 
-            if (childNode.nodeName === 'img') {
+}
 
-                if (_.filter(childNode.attrs, { name: 'inline' }).length) {
 
-                    inlineImage = childNode
+/**
+ * check if a node is a valid inline image
+ * @param {Object} node - parse5 documentFragment
+ * @returns {boolean}
+ *
+ */
+HtmlWebpackInlineSVGPlugin.prototype.isNodeValidInlineImage = function (node) {
 
-                    return true
+    return !!(
+        node.nodeName === 'img' &&
+        _.filter(node.attrs, { name: 'inline' }).length &&
+        this.getImagesSrc(node))
 
-                }
 
-            } else if (childNode.childNodes && childNode.childNodes.length) {
+}
 
-                return this.getInlineImage(childNode)
 
-            }
+/**
+ * get an inlined images src
+ * @param {Object} inlineImage - parse5 document
+ * @returns {string}
+ *
+ */
+HtmlWebpackInlineSVGPlugin.prototype.getImagesSrc = function (inlineImage) {
 
-            return false
+    const svgSrcObject = _.find(inlineImage.attrs, { name: 'src' })
 
-        })
+    // image does not have a src attribute
+    if (!svgSrcObject) return ''
 
-    }
+    const svgSrc = svgSrcObject.value
 
-    return inlineImage
+    // image src attribute must not be blank and it must be referencing a file with a .svg extension
+    return svgSrc && svgSrc.indexOf('.svg') !== -1 ? svgSrc : ''
 
 }
 
@@ -223,15 +251,10 @@ HtmlWebpackInlineSVGPlugin.prototype.processOutputHtml = function (html, inlineI
 
     return new Promise((resolve, reject) => {
 
-        const svgSrcObject = _.find(inlineImage.attrs, { name: 'src' })
+        const svgSrc = this.getImagesSrc(inlineImage)
 
-        // image does not have a src attribute
-        if (!svgSrcObject) return resolve(html)
-
-        const svgSrc = svgSrcObject.value
-
-        // image src attribute must not be blank and it must be referencing a file with a .svg extension
-        if (!svgSrc || svgSrc.indexOf('.svg') === -1) return resolve(html)
+        // if the image isn't valid resolve
+        if (!svgSrc) return resolve(html)
 
         fs.readFile(path.resolve(svgSrc), 'utf8', (err, data) => {
 
@@ -282,101 +305,5 @@ HtmlWebpackInlineSVGPlugin.prototype.replaceImageWithSVG = function (html, inlin
     return html.substring(0, start) + svg + html.substring(end)
 
 }
-
-// HtmlWebpackInlineSVGPlugin.prototype.apply = function (compiler) {
-
-//     // Hook into the html-webpack-plugin processing
-//     compiler.plugin('compilation', (compilation) => {
-
-//         compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
-
-//             $ = cheerio.load(htmlPluginData.html, {
-//                 decodeEntities: false
-//             })
-
-//             // find img tags with an inline attribute
-//             const $imgs = $('img[inline]')
-
-//             const imgArray = []
-
-//             $imgs.each((index, img) => {
-
-//                 const svgSrc = $(img).attr('src')
-
-//                 // must be referencing a file with a .svg extension
-//                 if (svgSrc && svgSrc.indexOf('.svg') !== -1) {
-
-//                     imgArray.push({
-//                         img,
-//                         svgSrc,
-//                     })
-
-//                 }
-
-//             })
-
-//             Promise.all(imgArray.map(imgObject => this.processImage(htmlPluginData, imgObject)))
-//                 .then(() => {
-
-//                     const html = $.html()
-
-//                     htmlPluginData.html = html || htmlPluginData.html
-
-//                     // cheerio will remove closing body and html tags if the document
-
-//                     callback(null, htmlPluginData)
-
-//                 })
-//                 .catch((err) => {
-
-//                     const errorMessage =
-//                         err.message ?
-//                         err.message :
-//                         'One of your inline SVGs hit an error, likely caused by the file not being found'
-
-//                     console.error(chalk.red(errorMessage))
-
-//                 })
-
-//         })
-
-//     })
-
-// }
-
-// HtmlWebpackInlineSVGPlugin.prototype.processImage = (htmlPluginData, imgObject) =>
-
-//     new Promise((resolve, reject) => {
-
-//         fs.readFile(path.resolve(imgObject.svgSrc), 'utf8', (err, data) => {
-
-//             if (err) reject(err)
-
-//             const configObj = Object.assign(svgoDefaultConfig, userConfig)
-
-//             const config = {}
-
-//             // pass all objects to the config.plugins array
-//             config.plugins = _.map(configObj, (value, key) => ({ [key]: value }));
-
-//             const svgo = new SVGO(config)
-
-//             svgo.optimize(data, (result) => {
-
-//                 if (result.error) reject(result.error)
-
-//                 const optimisedSVG = result.data
-
-//                 $(imgObject.img).after(optimisedSVG)
-
-//                 $(imgObject.img).remove()
-
-//                 resolve(optimisedSVG)
-
-//             })
-
-//         })
-
-//     })
 
 module.exports = HtmlWebpackInlineSVGPlugin

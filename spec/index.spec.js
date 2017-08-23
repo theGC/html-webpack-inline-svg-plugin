@@ -99,6 +99,24 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
     })
 
+    it('should remove multiple inlined img tags within the same document', function (done) {
+
+        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+
+        fs.readFile(htmlFile, 'utf8', function (er, data) {
+
+            expect(er).toBeFalsy()
+
+            var $ = cheerio.load(data)
+
+            expect($('#then-replace-me').length).toBe(0)
+
+            done()
+
+        })
+
+    })
+
     it('should ignore images that are not svg', function (done) {
 
         var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
@@ -162,6 +180,12 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
     })
 
+    /**
+     * Partial is included to test situations where templates are only parts of a pages output
+     * i.e separate header and footer templates
+     * resulting in broken opening / closing tags
+     *
+     */
     it('allow partials to have broken tags', function (done) {
 
         var htmlFile = path.resolve(OUTPUT_DIR, 'partial.html')
@@ -174,6 +198,42 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
             expect(dataSquashed.startsWith('<\/p><\/div>'))
                 .toBe(true)
+
+            done()
+
+        })
+
+    })
+
+    it('should replace nested inline imgs', function (done) {
+
+        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+
+        fs.readFile(htmlFile, 'utf8', function (er, data) {
+
+            expect(er).toBeFalsy()
+
+            var $ = cheerio.load(data)
+
+            expect($('#deep-replace-me').length).toBe(0)
+
+            done()
+
+        })
+
+    })
+
+    it('should contain deep inline SVG', function (done) {
+
+        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+
+        fs.readFile(htmlFile, 'utf8', function (er, data) {
+
+            expect(er).toBeFalsy()
+
+            var $ = cheerio.load(data)
+
+            expect($('svg#deep-inline-me').length).toBe(1)
 
             done()
 
