@@ -25,7 +25,7 @@
     <body>
 
         <div>
-            <p>should not touch this: <img width="20px" height="auto" class="leave-me" src="../spec/fixtures/images/face.svg"></p>
+            <p>should not touch this: <img width="20px" height="auto" class="leave-me" src="images/face.svg"></p>
             <p>
                 <span>if below SVG is inlined correctly we can reference its content:</span>
                 <svg class="icon mood-good"><use xlink:href="#icon-mood-good"></use></svg>
@@ -33,18 +33,23 @@
         </div>
 
         <section>
+            <h2>Deep Replace</h2>
             <div>
                 <span>
-                    <img id="deep-replace-me" inline src="spec/fixtures/images/face.svg">
+                    <img id="deep-replace-me" inline src="images/face.svg">
                 </span>
             </div>
         </section>
 
-        <img id="replace-me" inline src="spec/fixtures/images/moods.svg">
+        <h2>Inline images</h2>
 
-        <img id="then-replace-me" inline src="spec/fixtures/images/another-face.svg">
+        <img id="replace-me" inline src="images/moods.svg">
 
-        <img id="not-an-svg" inline src="spec/fixtures/images/not-an-svg.png">
+        <img id="replace-an-alias" src="~img/moods.svg">
+
+        <img id="then-replace-me" inline src="images/another-face.svg">
+
+        <img id="not-an-svg" inline src="images/not-an-svg.png">
 
         <div id="do-not-decode"><?= $foo->bar; ?></div>
 

@@ -3,17 +3,17 @@
         </div>
 
         <div>
-            <p>should not touch this: <img width="20px" height="auto" class="leave-me" src="../spec/fixtures/images/face.svg"></p>
+            <p>should not touch this: <img width="20px" height="auto" class="leave-me" src="~img/face.svg"></p>
             <p>
                 <span>if below SVG is inlined correctly we can reference its content:</span>
                 <svg class="icon mood-good"><use xlink:href="#icon-mood-good"></use></svg>
-                <img id="find-and-replace-me" inline src="spec/fixtures/images/face.svg">
+                <img id="find-and-replace-me" inline src="images/face.svg">
             </p>
         </div>
 
-        <img id="replace-me" inline src="spec/fixtures/images/moods.svg">
+        <img id="replace-me" inline src="images/moods.svg">
 
-        <img id="not-an-svg" inline src="spec/fixtures/images/not-an-svg.png">
+        <img id="not-an-svg" inline src="images/not-an-svg.png">
 
         <div id="do-not-decode"><?= $foo->bar; ?></div>
 
