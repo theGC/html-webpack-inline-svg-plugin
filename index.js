@@ -15,9 +15,9 @@ const svgoDefaultConfig = require(path.resolve(__dirname, 'svgo-config.js'))
  */
 class HtmlWebpackInlineSVGPlugin {
 
-    constructor (options = null) {
+    constructor (options) {
 
-        if (options !== null) console.log(chalk.yellow('The HtmlWebpackInlineSVGPlugin does not accept any options'))
+        if (typeof options !== 'undefined') console.log(chalk.yellow('The HtmlWebpackInlineSVGPlugin does not accept any options'))
 
         this.userConfig = ''
         this.outputPath = ''
