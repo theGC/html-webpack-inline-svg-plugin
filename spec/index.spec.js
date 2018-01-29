@@ -4,13 +4,10 @@ var fs = require('fs')
 var chalk = require('chalk')
 var cheerio = require('cheerio')
 var webpack = require('webpack')
+var webpackConfig = require('./webpack.base.config')
 var rm = require('rimraf')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
-var HtmlWebpackInlineSVGPlugin = require('../')
 
-var OUTPUT_DIR = path.join(__dirname, '../dist')
-
-rm(OUTPUT_DIR, (err) => {
+rm(webpackConfig.outputDir, (err) => {
 
     if (err) console.log(chalk.red(err))
 
@@ -18,28 +15,16 @@ rm(OUTPUT_DIR, (err) => {
 
 describe('HtmlWebpackInlineSVGPlugin', function () {
 
-    beforeEach(function (done) {
+    beforeAll(function (done) {
 
-        webpack({
-            entry: path.join(__dirname, 'fixtures', 'entry.js'),
-            output: {
-                path: OUTPUT_DIR,
-            },
-            plugins: [
-                new HtmlWebpackPlugin({
-                    template: path.join(__dirname, 'fixtures', 'index.html'),
-                }),
-                new HtmlWebpackPlugin({
-                    filename: path.resolve(OUTPUT_DIR, 'partial.html'),
-                    template: path.join(__dirname, 'fixtures', 'partial.html'),
-                }),
-                new HtmlWebpackInlineSVGPlugin(),
-            ],
-        }, function (err) {
+        webpack(webpackConfig.options, (err) => {
 
             expect(err).toBeFalsy()
 
-            done()
+            // callbck is fired before all files hve been written to disk
+            // due to use of after-emit - place a timeout to try and avoid the issue
+
+            setTimeout(done, 2000)
 
         })
 
@@ -47,11 +32,11 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
     it('should not inline imgs without inline attribute', function (done) {
 
-        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+        var htmlFile = path.resolve(webpackConfig.outputDir, 'index.html')
 
-        fs.readFile(htmlFile, 'utf8', function (er, data) {
+        fs.readFile(htmlFile, 'utf8', function (err, data) {
 
-            expect(er).toBeFalsy()
+            expect(err).toBeFalsy()
 
             var $ = cheerio.load(data)
 
@@ -65,11 +50,11 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
     it('should inline imgs with inline attribute', function (done) {
 
-        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+        var htmlFile = path.resolve(webpackConfig.outputDir, 'index.html')
 
-        fs.readFile(htmlFile, 'utf8', function (er, data) {
+        fs.readFile(htmlFile, 'utf8', function (err, data) {
 
-            expect(er).toBeFalsy()
+            expect(err).toBeFalsy()
 
             var $ = cheerio.load(data)
 
@@ -83,11 +68,11 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
     it('should remove img tags with inline attribute', function (done) {
 
-        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+        var htmlFile = path.resolve(webpackConfig.outputDir, 'index.html')
 
-        fs.readFile(htmlFile, 'utf8', function (er, data) {
+        fs.readFile(htmlFile, 'utf8', function (err, data) {
 
-            expect(er).toBeFalsy()
+            expect(err).toBeFalsy()
 
             var $ = cheerio.load(data)
 
@@ -101,11 +86,11 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
     it('should remove multiple inlined img tags within the same document', function (done) {
 
-        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+        var htmlFile = path.resolve(webpackConfig.outputDir, 'index.html')
 
-        fs.readFile(htmlFile, 'utf8', function (er, data) {
+        fs.readFile(htmlFile, 'utf8', function (err, data) {
 
-            expect(er).toBeFalsy()
+            expect(err).toBeFalsy()
 
             var $ = cheerio.load(data)
 
@@ -119,11 +104,11 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
     it('should ignore images that are not svg', function (done) {
 
-        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+        var htmlFile = path.resolve(webpackConfig.outputDir, 'index.html')
 
-        fs.readFile(htmlFile, 'utf8', function (er, data) {
+        fs.readFile(htmlFile, 'utf8', function (err, data) {
 
-            expect(er).toBeFalsy()
+            expect(err).toBeFalsy()
 
             var $ = cheerio.load(data)
 
@@ -137,18 +122,14 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
     it('do not html decode content', function (done) {
 
-        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+        var htmlFile = path.resolve(webpackConfig.outputDir, 'index.html')
 
-        fs.readFile(htmlFile, 'utf8', function (er, data) {
+        fs.readFile(htmlFile, 'utf8', function (err, data) {
 
-            expect(er).toBeFalsy()
+            expect(err).toBeFalsy()
 
-            var $ = cheerio.load(data, {
-                decodeEntities: false,
-            })
-
-            expect($('#do-not-decode').html())
-                .toBe('<?= $foo->bar; ?>')
+            expect(data.indexOf('<?= $foo->bar; ?>'))
+                .not.toBe(-1)
 
             done()
 
@@ -158,11 +139,11 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
     it('do not touch broken tags', function (done) {
 
-        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+        var htmlFile = path.resolve(webpackConfig.outputDir, 'index.html')
 
-        fs.readFile(htmlFile, 'utf8', function (er, data) {
+        fs.readFile(htmlFile, 'utf8', function (err, data) {
 
-            expect(er).toBeFalsy()
+            expect(err).toBeFalsy()
 
             var re1 = /should output broken tags<\/p>/gi;
 
@@ -188,11 +169,11 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
      */
     it('allow partials to have broken tags', function (done) {
 
-        var htmlFile = path.resolve(OUTPUT_DIR, 'partial.html')
+        var htmlFile = path.resolve(webpackConfig.outputDir, 'partial.html')
 
-        fs.readFile(htmlFile, 'utf8', function (er, data) {
+        fs.readFile(htmlFile, 'utf8', function (err, data) {
 
-            expect(er).toBeFalsy()
+            expect(err).toBeFalsy()
 
             const dataSquashed = data.replace(/\s/g,'')
 
@@ -207,11 +188,11 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
     it('should replace nested inline imgs', function (done) {
 
-        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+        var htmlFile = path.resolve(webpackConfig.outputDir, 'index.html')
 
-        fs.readFile(htmlFile, 'utf8', function (er, data) {
+        fs.readFile(htmlFile, 'utf8', function (err, data) {
 
-            expect(er).toBeFalsy()
+            expect(err).toBeFalsy()
 
             var $ = cheerio.load(data)
 
@@ -225,11 +206,11 @@ describe('HtmlWebpackInlineSVGPlugin', function () {
 
     it('should contain deep inline SVG', function (done) {
 
-        var htmlFile = path.resolve(OUTPUT_DIR, 'index.html')
+        var htmlFile = path.resolve(webpackConfig.outputDir, 'index.html')
 
-        fs.readFile(htmlFile, 'utf8', function (er, data) {
+        fs.readFile(htmlFile, 'utf8', function (err, data) {
 
-            expect(er).toBeFalsy()
+            expect(err).toBeFalsy()
 
             var $ = cheerio.load(data)
 
