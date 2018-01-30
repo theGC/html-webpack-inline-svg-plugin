@@ -2,9 +2,11 @@ Inline SVG extension for the HTML Webpack Plugin
 ========================================
 [![npm version](https://badge.fury.io/js/html-webpack-inline-svg-plugin.svg)](https://badge.fury.io/js/html-webpack-inline-svg-plugin) [![Build status](https://travis-ci.org/theGC/html-webpack-inline-svg-plugin.svg)](https://travis-ci.org/theGC/html-webpack-inline-svg-plugin)
 
-Allows you to inline SVGs that are parsed by [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin).
+Convert .svg files into inline SVG tags within the output html of templates parsed by [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin).
 
-Now you can easily add inline SVGs to your output html. Combined with techniques such as: [Icon System with SVG Sprites](https://css-tricks.com/svg-sprites-use-better-icon-fonts/) you have a simple way of ensuring your svg referenced icons are always visible.
+By inlining SVGs you can combine them with techniques such as: [Icon System with SVG Sprites](https://css-tricks.com/svg-sprites-use-better-icon-fonts/).
+
+As of version 1.0.0 this plugin processes SVG files after all template and image files have been written to their corresponding output directory. This allows it to work after webpack resolves all file locations, therefore relative image paths (to the template being parsed) alongside aliases are supported.
 
 The plugin relies on [svgo](https://github.com/svg/svgo) to optimise SVGs. You can configure it's settings, check below for more details.
 
@@ -41,31 +43,41 @@ Add `img` tags with `inline` attribute and `.svg` file as src to your template/s
 
 ```html
 <!-- Works: below img tag will be removed and replaced by the content of the svg in its src -->
-<img inline src="static/icons.svg">
+<img inline src="images/icons.svg">
 
 <!-- Ignored: this img will not be touched as it has no inline attribute -->
-<img src="static/foo.svg">
+<img src="images/foo.svg">
 
-<!-- Broken: this plugin will ignore this src as it is not an svg -->
-<img inline src="static/i-will-be-ignored.png">
+<!-- Broken: the plugin will ignore this src as it is not an svg -->
+<img inline src="images/i-will-be-ignored.png">
 ```
 
 Getting to your SVGs
 -----------
 
-References to your `*.svg` files within the `img` tags src should be relative to your project root, this is usually the directory your `package.json` file sits in:
+> Breaking change: As of version 1.0.0 the plugin waits for webpack to resolve image locations and write them to disk. If you were using a version prior to 1.0.0 then it is likely you'll need to update the src paths to your inline SVGs to reflect this change. See below for more info.
+
+References to `*.svg` files within an `img` tags src are relative to the template being passed to **html-webpack-plugin**.
+
+This plugin processes updates to a templates html after it has been saved to its output directory and webpack has emited all assets (after-emit). This allows it to work after webpack has resolved the template image file locations. It therefore supports the use of relative paths, alongside webpack aliases.
 
 ```
 my-project
 -- package.json
+-- webpack-config.js
 -- <node_modules>
--- <static>
----- icons.svg
----- foo.svg
----- ...
+-- <src>
+---- index.html
+---- <images>
+------ icons.svg
+------ foo.svg
 ```
 
-With the above structure inlining icons.svg would look like: `<img inline src="static/icons.svg">`
+With the above structure inlining icons.svg would look like: `<img inline src="images/icons.svg">`
+
+If an alias was in place for the images directory, i.e.
+```'img': path.join(__dirname, 'src', 'images')```
+Then the svg can be inlined with: `<img inline src="~img/icons.svg">`
 
 Config
 -----------
@@ -90,6 +102,7 @@ Features
 
 * Optimises / minimizes the output SVG
 * Allows for deep nested SVGs
+* Supports webpack aliases for file locations
 * Ignores broken tags - incase you are outputting templates for various parts of the page
 * Performs no html decoding so supports language tags, i.e. `<?php echo 'foo bar'; ?>`
 
