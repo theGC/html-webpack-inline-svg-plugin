@@ -1,4 +1,3 @@
-
 Inline SVG extension for the HTML Webpack Plugin
 ========================================
 [![npm version](https://badge.fury.io/js/html-webpack-inline-svg-plugin.svg)](https://badge.fury.io/js/html-webpack-inline-svg-plugin) [![Build status](https://travis-ci.org/theGC/html-webpack-inline-svg-plugin.svg)](https://travis-ci.org/theGC/html-webpack-inline-svg-plugin)
@@ -9,7 +8,7 @@ By inlining SVGs you can combine them with techniques such as: [Icon System with
 
 As of version 1.0.0 this plugin processes SVG files after all template and image files have been written to their corresponding output directory. This allows it to work alongside loaders, after webpack resolves all file locations.
 
-> Please note: to use aliases or relative paths you will need to install loaders to resolve your svg paths and parse the templates html. More info is provided below in: [Getting to your SVGs](#getting-to-your-svgs)
+> Please note: to use **aliases** you will need to install loaders to resolve your svg paths and parse the templates html. More info is provided below: [Getting to your SVGs](#getting-to-your-svgs).
 
 The plugin relies on [svgo](https://github.com/svg/svgo) to optimise SVGs. You can configure it's settings, check [config](#config) for more details.
 
@@ -61,8 +60,8 @@ Add `img` tags with `inline` attribute and `.svg` file as src to your template/s
 
 There are two ways of working with your `<img>` **src** attributes and this plugin.
 
-1.  **If you are not working with loaders** to allow webpack to parse and resolve the `img` tags `src` attributes within your *html-webpack-plugin* templates. Use paths that are relative to your **svg** images from the **output** location of the template that is referencing it.
-2. **Alternatively use loaders** such as [html-loader](https://github.com/webpack-contrib/html-loader) to parse the html templates, and [file-loader](https://github.com/webpack-contrib/file-loader) or something similar, to resolve the paths of your `img` tags `src` attributes. As the plugin works after webpack has emitted all its assets and the *html-webpack-plugin* has output your templates, it will read the SVGs that webpack places in your output directory, and replace any inline SVGs with this content.
+1.  If you are **not working with loaders** to allow webpack to parse and resolve the `img` tags `src` attributes within your *html-webpack-plugin* templates. Use paths that are relative to your **svg** images from the **output** location of the template that is referencing it.
+2. **Alternatively use loaders** such as [html-loader](https://github.com/webpack-contrib/html-loader) to parse the html templates, and [file-loader](https://github.com/webpack-contrib/file-loader) or something similar, to resolve the paths of your `img` tags `src` attributes. As the plugin works after webpack has emitted all its assets and *html-webpack-plugin* has output your templates, it will read the SVGs that webpack places in your output directory, and replace any **inlined img tags** with this content.
 
 ```
 my-project
