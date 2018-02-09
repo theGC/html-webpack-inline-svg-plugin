@@ -6,9 +6,11 @@ Convert .svg files into inline SVG tags within the output html of templates pars
 
 By inlining SVGs you can combine them with techniques such as: [Icon System with SVG Sprites](https://css-tricks.com/svg-sprites-use-better-icon-fonts/).
 
-As of version 1.0.0 this plugin processes SVG files after all template and image files have been written to their corresponding output directory. This allows it to work alongside loaders, after webpack resolves all file locations.
+As of version 1.0.0 **by default** this plugin processes SVG files after all template and image files have been written to their corresponding output directory. This allows it to work alongside loaders, after webpack resolves all file locations.
 
 > Please note: to use **aliases** you will need to install loaders to resolve your svg paths and parse the templates html. More info is provided below: [Getting to your SVGs](#getting-to-your-svgs).
+
+**As of version 1.1.0** the plugin can also be run prior to the output of your templates. This allows you to reference image files from the root of your project which can help with getting to certain files, i.e. within your `node_modules` directory. More info is provided below: [Setting runPreEmit option](#setting-runpreemit-option).
 
 The plugin relies on [svgo](https://github.com/svg/svgo) to optimise SVGs. You can configure it's settings, check [config](#config) for more details.
 
@@ -58,10 +60,13 @@ Add `img` tags with `inline` attribute and `.svg` file as src to your template/s
 
 > Breaking change: As of version 1.0.0 the plugin waits for webpack to resolve image locations and write them to disk. If you were using a version prior to 1.0.0 then it is likely you'll need to update the src paths to your inline SVGs to reflect this change. See below for more info.
 
-There are two ways of working with your `<img>` **src** attributes and this plugin.
+There are **three ways** of working with your `<img>` **src** attributes and this plugin.
 
 1.  If you are **not working with loaders** to allow webpack to parse and resolve the `img` tags `src` attributes within your *html-webpack-plugin* templates. Use paths that are relative to your **svg** images from the **output** location of the template that is referencing it.
 2. **Alternatively use loaders** such as [html-loader](https://github.com/webpack-contrib/html-loader) to parse the html templates, and [file-loader](https://github.com/webpack-contrib/file-loader) or something similar, to resolve the paths of your `img` tags `src` attributes. As the plugin works after webpack has emitted all its assets and *html-webpack-plugin* has output your templates, it will read the SVGs that webpack places in your output directory, and replace any **inlined img tags** with this content.
+3. **Set the `runPreEmit` flag** and reference files relative to your `package.json` file. This feature is only available with version >= 1.1.0. More info is provided below: [Setting runPreEmit option](#setting-runpreemit-option).
+
+#### Sample Project Structure
 
 ```
 my-project
@@ -75,11 +80,28 @@ my-project
 ------ foo.svg
 ```
 
+#### Default Config (not setting `runPreEmit` option)
 With the above structure inlining icons.svg would look like: `<img inline src="images/icons.svg">`
 
 If an alias was in place for the images directory, i.e.
 ```'img': path.join(__dirname, 'src', 'images')```
 Then the svg can be inlined with: `<img inline src="~img/icons.svg">`. This method would require the use of **loaders** on your templates as shown above in point 2.
+
+#### Setting `runPreEmit` option
+If you aren't using **loaders** to resolve file locations, and would prefer to reference image paths relative to the **root** of your project (where your `package.json` file resides) then set the plugins `runPreEmit` config option to `true`:
+
+```javascript
+plugins: [
+    new HtmlWebpackPlugin(),
+    new HtmlWebpackInlineSVGPlugin({
+        runPreEmit: true,
+    })
+]
+```
+
+The plugin will now run prior to **html-webpack-plugin** saving your templates to your output directory. It will also expect all `<img inline` **src** attributes to be relative to your `package.json` file.
+
+Therefore with the above project structure, and `runPreEmit` set to `true`, inlining icons.svg would look like: `<img inline src="src/images/icons.svg">`
 
 ## Config
 
