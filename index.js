@@ -17,7 +17,11 @@ class HtmlWebpackInlineSVGPlugin {
 
     constructor (options) {
 
-        if (typeof options !== 'undefined') console.log(chalk.yellow('The HtmlWebpackInlineSVGPlugin does not accept any options'))
+        if (options && options.runPreEmit) {
+
+            this.runPreEmit = true
+
+        }
 
         this.userConfig = ''
         this.outputPath = ''
@@ -39,69 +43,91 @@ class HtmlWebpackInlineSVGPlugin {
 
         compiler.plugin('compilation', (compilation) => {
 
-            compilation.plugin('html-webpack-plugin-after-emit', (htmlPluginData, callback) => {
+            if (this.runPreEmit) {
+
+                compilation.plugin('html-webpack-plugin-after-html-processing', (htmlPluginData, callback) => {
+
+                    // get the custom config
+
+                    this.getUserConfig()
 
 
-                // fetch the output path from webpack
+                    // process the images
 
-                this.outputPath = compilation.outputOptions &&
-                    compilation.outputOptions.path ?
-                    compilation.outputOptions.path :
-                    ''
+                    this.processImages(htmlPluginData.html)
+                        .then((html) => {
 
-                if (!this.outputPath) {
+                            htmlPluginData.html = html || htmlPluginData.html
 
-                    console.log(chalk.red('no output path found on compilation.outputOptions'))
+                            callback(null, htmlPluginData)
 
-                    callback(null, htmlPluginData)
+                        })
+                        .catch((err) => callback(null, htmlPluginData))
 
-                    return
-
-                }
-
-
-                // get the custom config
-
-                this.userConfig =
-                    htmlPluginData.plugin.options.svgoConfig &&
-                    _.isObject(htmlPluginData.plugin.options.svgoConfig) ?
-                    htmlPluginData.plugin.options.svgoConfig :
-                    {}
-
-
-                // get the filename
-
-                const filename = htmlPluginData.outputName ? htmlPluginData.outputName : ''
-
-                if (!filename) {
-
-                    console.log(chalk.red('no filename found on htmlPluginData.outputName'))
-
-                    callback(null, htmlPluginData)
-
-                    return
-
-                }
-
-
-                // get the emitted HTML - prior to SVG's being inlined
-
-                const originalHtml = htmlPluginData.html.source()
-
-
-                // add filename and original html to the file array
-
-                this.files.push({
-                    filename,
-                    originalHtml,
                 })
 
+            } else {
 
-                // fire callback to pass control to any further plugins
+                compilation.plugin('html-webpack-plugin-after-emit', (htmlPluginData, callback) => {
 
-                callback(null, htmlPluginData)
+                    // fetch the output path from webpack
 
-            })
+                    this.outputPath = compilation.outputOptions &&
+                        compilation.outputOptions.path ?
+                        compilation.outputOptions.path :
+                        ''
+
+                    if (!this.outputPath) {
+
+                        console.log(chalk.red('no output path found on compilation.outputOptions'))
+
+                        callback(null, htmlPluginData)
+
+                        return
+
+                    }
+
+
+                    // get the custom config
+
+                    this.getUserConfig()
+
+
+                    // get the filename
+
+                    const filename = htmlPluginData.outputName ? htmlPluginData.outputName : ''
+
+                    if (!filename) {
+
+                        console.log(chalk.red('no filename found on htmlPluginData.outputName'))
+
+                        callback(null, htmlPluginData)
+
+                        return
+
+                    }
+
+
+                    // get the emitted HTML - prior to SVG's being inlined
+
+                    const originalHtml = htmlPluginData.html.source()
+
+
+                    // add filename and original html to the file array
+
+                    this.files.push({
+                        filename,
+                        originalHtml,
+                    })
+
+
+                    // fire callback to pass control to any further plugins
+
+                    callback(null, htmlPluginData)
+
+                })
+
+            }
 
         })
 
@@ -109,38 +135,59 @@ class HtmlWebpackInlineSVGPlugin {
         // hook after-emit so we can read the generated SVG assets within
         // the output directory
 
-        compiler.plugin('after-emit', (compilation, callback) => {
+        if (!this.runPreEmit) {
 
-            if (!this.files.length) {
+            compiler.plugin('after-emit', (compilation, callback) => {
 
-                console.log(chalk.green('no files passed for SVG inline to process'))
+                if (!this.files.length) {
 
-                return
+                    console.log(chalk.green('no files passed for SVG inline to process'))
 
-            }
+                    return
+
+                }
 
 
-            // iterate over each file and inline it's SVGs
+                // iterate over each file and inline it's SVGs
 
-            this.files.forEach((file) => {
+                this.files.forEach((file) => {
 
-                this.processImages(file.originalHtml)
-                    .then((html) => this.updateOutputFile(html, file.filename))
-                    .then(() => {
+                    this.processImages(file.originalHtml)
+                        .then((html) => this.updateOutputFile(html, file.filename))
+                        .then(() => {
 
-                        // console.log(chalk.green('SVGs inlining complete: ' + file.filename))
+                            // console.log(chalk.green('SVGs inlining complete: ' + file.filename))
 
-                    })
-                    .catch((err) => console.log(chalk.red(err.message)))
+                        })
+                        .catch((err) => console.log(chalk.red(err.message)))
+
+                })
+
+
+                // notify webpack that this process is complete
+
+                callback()
 
             })
 
+        }
 
-            // notify webpack that this process is complete
+    }
 
-            callback()
 
-        })
+    /**
+     * get the users custom config
+     * @param {Object} htmlPluginData
+     *
+     */
+    getUserConfig (htmlPluginData) {
+
+        this.userConfig =
+            htmlPluginData &&
+            htmlPluginData.plugin.options.svgoConfig &&
+            _.isObject(htmlPluginData.plugin.options.svgoConfig) ?
+            htmlPluginData.plugin.options.svgoConfig :
+            {}
 
     }
 
