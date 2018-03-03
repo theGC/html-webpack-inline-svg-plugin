@@ -59,10 +59,10 @@ class HtmlWebpackInlineSVGPlugin {
 
                             htmlPluginData.html = html || htmlPluginData.html
 
-                            callback(null, htmlPluginData)
+                            callback && callback(null, htmlPluginData)
 
                         })
-                        .catch((err) => callback(null, htmlPluginData))
+                        .catch((err) => callback && callback(null, htmlPluginData))
 
                 })
 
@@ -81,7 +81,7 @@ class HtmlWebpackInlineSVGPlugin {
 
                         console.log(chalk.red('no output path found on compilation.outputOptions'))
 
-                        callback(null, htmlPluginData)
+                        callback && callback(null, htmlPluginData)
 
                         return
 
@@ -101,7 +101,7 @@ class HtmlWebpackInlineSVGPlugin {
 
                         console.log(chalk.red('no filename found on htmlPluginData.outputName'))
 
-                        callback(null, htmlPluginData)
+                        callback && callback(null, htmlPluginData)
 
                         return
 
@@ -123,7 +123,7 @@ class HtmlWebpackInlineSVGPlugin {
 
                     // fire callback to pass control to any further plugins
 
-                    callback(null, htmlPluginData)
+                    callback && callback(null, htmlPluginData)
 
                 })
 
@@ -166,7 +166,7 @@ class HtmlWebpackInlineSVGPlugin {
 
                 // notify webpack that this process is complete
 
-                callback()
+                callback && callback()
 
             })
 
