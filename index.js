@@ -36,7 +36,7 @@ class HtmlWebpackInlineSVGPlugin {
      * @param {object} compiler - webpack compiler
      *
      */
-    async apply (compiler) {
+    apply (compiler) {
 
 
         // Hook into the html-webpack-plugin processing
