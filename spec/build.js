@@ -16,8 +16,8 @@ rm(webpackConfig.outputDir, (err) => {
 
 // add pre or post emit config to base
 
-// Object.assign(webpackConfig.options, webpackPostEmitConfig)
-Object.assign(webpackConfig.options, webpackPreEmitConfig)
+Object.assign(webpackConfig.options, webpackPostEmitConfig)
+// Object.assign(webpackConfig.options, webpackPreEmitConfig)
 
 
 /**

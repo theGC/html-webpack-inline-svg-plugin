@@ -161,26 +161,12 @@ class HtmlWebpackInlineSVGPlugin {
 
 
                 // iterate over each file and inline it's SVGs
+                // then return a callback if available
 
-                this.files.forEach((file) => {
-
-                    this.processImages(file.originalHtml)
-                        .then((html) => this.updateOutputFile(html, file.filename))
-                        .then(() => {
-
-                            // console.log(chalk.green('SVGs inlining complete: ' + file.filename))
-
-                        })
-                        .catch((err) => console.log(chalk.red(err.message)))
-
-                })
-
-
-                // notify webpack that this process is complete
-
-                return typeof callback === 'function' ?
-                    callback() :
-                    null
+                return Promise.all(this.files.map(file => this.processImages(file.originalHtml)))
+                    .then((htmlArray) => Promise.all(htmlArray.map((html, index) => this.updateOutputFile(html, this.files[index].filename))))
+                    .then(() => typeof callback === 'function' ? callback() : null)
+                    .catch((err) => console.log(chalk.red(err.message)))
 
             })
 
