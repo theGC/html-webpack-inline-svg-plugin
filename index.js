@@ -49,7 +49,7 @@ class HtmlWebpackInlineSVGPlugin {
 
                     // get the custom config
 
-                    this.getUserConfig()
+                    this.getUserConfig(htmlPluginData)
 
 
                     // process the images
@@ -90,7 +90,7 @@ class HtmlWebpackInlineSVGPlugin {
 
                     // get the custom config
 
-                    this.getUserConfig()
+                    this.getUserConfig(htmlPluginData)
 
 
                     // get the filename
