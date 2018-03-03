@@ -36,7 +36,7 @@ class HtmlWebpackInlineSVGPlugin {
      * @param {object} compiler - webpack compiler
      *
      */
-    apply (compiler) {
+    async apply (compiler) {
 
 
         // Hook into the html-webpack-plugin processing
@@ -49,20 +49,30 @@ class HtmlWebpackInlineSVGPlugin {
 
                     // get the custom config
 
-                    this.getUserConfig()
+                    this.getUserConfig(htmlPluginData)
 
 
                     // process the images
 
-                    this.processImages(htmlPluginData.html)
+                    return this.processImages(htmlPluginData.html)
                         .then((html) => {
 
                             htmlPluginData.html = html || htmlPluginData.html
 
-                            callback(null, htmlPluginData)
+                            return typeof callback === 'function' ?
+                                callback(null, htmlPluginData) :
+                                htmlPluginData
 
                         })
-                        .catch((err) => callback(null, htmlPluginData))
+                        .catch((err) => {
+
+                            console.log(err)
+
+                            return typeof callback === 'function' ?
+                                callback(null, htmlPluginData) :
+                                htmlPluginData
+
+                        })
 
                 })
 
@@ -81,16 +91,16 @@ class HtmlWebpackInlineSVGPlugin {
 
                         console.log(chalk.red('no output path found on compilation.outputOptions'))
 
-                        callback(null, htmlPluginData)
-
-                        return
+                        return typeof callback === 'function' ?
+                            callback(null, htmlPluginData) :
+                            htmlPluginData
 
                     }
 
 
                     // get the custom config
 
-                    this.getUserConfig()
+                    this.getUserConfig(htmlPluginData)
 
 
                     // get the filename
@@ -101,9 +111,9 @@ class HtmlWebpackInlineSVGPlugin {
 
                         console.log(chalk.red('no filename found on htmlPluginData.outputName'))
 
-                        callback(null, htmlPluginData)
-
-                        return
+                        return typeof callback === 'function' ?
+                            callback(null, htmlPluginData) :
+                            htmlPluginData
 
                     }
 
@@ -123,7 +133,9 @@ class HtmlWebpackInlineSVGPlugin {
 
                     // fire callback to pass control to any further plugins
 
-                    callback(null, htmlPluginData)
+                    return typeof callback === 'function' ?
+                        callback(null, htmlPluginData) :
+                        htmlPluginData
 
                 })
 
@@ -166,7 +178,9 @@ class HtmlWebpackInlineSVGPlugin {
 
                 // notify webpack that this process is complete
 
-                callback()
+                return typeof callback === 'function' ?
+                    callback() :
+                    null
 
             })
 
@@ -184,7 +198,7 @@ class HtmlWebpackInlineSVGPlugin {
 
         this.userConfig =
             htmlPluginData &&
-            htmlPluginData.plugin.options.svgoConfig &&
+            htmlPluginData.plugin.options &&
             _.isObject(htmlPluginData.plugin.options.svgoConfig) ?
             htmlPluginData.plugin.options.svgoConfig :
             {}
@@ -289,11 +303,13 @@ class HtmlWebpackInlineSVGPlugin {
 
         return inlineImages.reduce((promise, imageNode) => {
 
-            return promise.then((html) => {
+            return promise
+                .then((html) => {
 
-                return this.processImage(html)
+                    return this.processImage(html)
 
-            })
+                })
+                .catch(err => console.log(err))
 
         }, Promise.resolve(html))
 

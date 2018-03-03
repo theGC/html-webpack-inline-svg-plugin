@@ -89,3 +89,4 @@ describe('HtmlWebpackInlineSVGPlugin: pre webpack resolve', function () {
     })
 
 })
+

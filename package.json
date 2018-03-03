@@ -33,13 +33,13 @@
     "devDependencies": {
         "file-loader": "^1.1.6",
         "html-loader": "^0.5.5",
-        "html-webpack-plugin": "^2.30.1",
+        "html-webpack-plugin": "^3.0.4",
         "jasmine": "^2.9.0",
         "rimraf": "^2.6.2",
-        "webpack": "^3.10.0"
+        "webpack": "^4.0.1"
     },
     "dependencies": {
-        "chalk": "^2.3.0",
+        "chalk": "^2.3.2",
         "cheerio": "^1.0.0-rc.2",
         "lodash": "^4.17.4",
         "parse5": "^4.0.0",
