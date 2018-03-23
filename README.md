@@ -2,7 +2,24 @@ Inline SVG extension for the HTML Webpack Plugin
 ========================================
 [![npm version](https://badge.fury.io/js/html-webpack-inline-svg-plugin.svg)](https://badge.fury.io/js/html-webpack-inline-svg-plugin) [![Build status](https://travis-ci.org/theGC/html-webpack-inline-svg-plugin.svg)](https://travis-ci.org/theGC/html-webpack-inline-svg-plugin)
 
-Convert .svg files into inline SVG tags within the output html of templates parsed by [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin).
+#### Convert .svg files into inline SVG tags within the output html of templates parsed by [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin).
+
+**Readme Index**
+
+* [Overview](#overview)
+* [Installation](#installation)
+* [Usage](#usage)
+  * [Getting to your SVGs](#getting-to-your-svgs)
+    * [Sample Project Structure](#sample-project-structure)
+    * [Default Config (not setting `runPreEmit` option)](#default-config-not-setting-runpreemit-option)
+    * [Setting `runPreEmit` option](#setting-runpreemit-option)
+* [Config](#config)
+* [Features](#features)
+* [Known Issues](#known-issues)
+* [Contribution](#contribution)
+* [License](#license)
+
+# Overview
 
 By inlining SVGs you can combine them with techniques such as: [Icon System with SVG Sprites](https://css-tricks.com/svg-sprites-use-better-icon-fonts/).
 
@@ -56,7 +73,7 @@ Add `img` tags with `inline` attribute and `.svg` file as src to your template/s
 <img inline src="images/i-will-be-ignored.png">
 ```
 
-## Getting to your SVGs
+### Getting to your SVGs
 
 > Breaking change: As of version 1.0.0 the plugin waits for webpack to resolve image locations and write them to disk. If you were using a version prior to 1.0.0 then it is likely you'll need to update the src paths to your inline SVGs to reflect this change. See below for more info.
 
@@ -81,10 +98,15 @@ my-project
 ```
 
 #### Default Config (not setting `runPreEmit` option)
-With the above structure inlining icons.svg would look like: `<img inline src="images/icons.svg">`
+With the above structure inlining icons.svg would look like:
+```html
+<img inline src="images/icons.svg">
+```
 
 If an alias was in place for the images directory, i.e.
-```'img': path.join(__dirname, 'src', 'images')```
+```javascript
+'img': path.join(__dirname, 'src', 'images')
+```
 Then the svg can be inlined with: `<img inline src="~img/icons.svg">`. This method would require the use of **loaders** on your templates as shown above in point 2.
 
 #### Setting `runPreEmit` option
@@ -101,7 +123,11 @@ plugins: [
 
 The plugin will now run prior to **html-webpack-plugin** saving your templates to your output directory. It will also expect all `<img inline` **src** attributes to be relative to your `package.json` file.
 
-Therefore with the above project structure, and `runPreEmit` set to `true`, inlining icons.svg would look like: `<img inline src="src/images/icons.svg">`
+Therefore with the above project structure, and `runPreEmit` set to `true`, inlining icons.svg would look like:
+
+```html
+<img inline src="src/images/icons.svg">
+```
 
 ## Config
 
