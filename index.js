@@ -510,11 +510,12 @@ class HtmlWebpackInlineSVGPlugin {
       // get the class from the input image
 
       const imageClass = inlineImage.attrs.find(attr => attr.name === 'class')
-          .value
 
       // add class to the output svg
 
-      const svgWithClass = svg.replace('<svg', `<svg class="${imageClass}"`)
+      if (imageClass) {
+          svg = svg.replace('<svg', `<svg class="${imageClass.value}"`)
+      }
 
       const start = inlineImage.__location.startOffset
 
@@ -522,7 +523,7 @@ class HtmlWebpackInlineSVGPlugin {
 
       // remove the img tag and add the svg content
 
-      return html.substring(0, start) + svgWithClass + html.substring(end)
+      return html.substring(0, start) + svg + html.substring(end)
   }
 
 }
