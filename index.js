@@ -507,23 +507,23 @@ class HtmlWebpackInlineSVGPlugin {
      *
      */
     replaceImageWithSVG(html, inlineImage, svg) {
-      // get the class from the input image
+        // get the class from the input image
 
-      const imageClass = inlineImage.attrs.find(attr => attr.name === 'class')
+        const imageClass = inlineImage.attrs.find(attr => attr.name === 'class')
 
-      // add class to the output svg
+        // add class to the output svg
 
-      if (imageClass) {
-          svg = svg.replace('<svg', `<svg class="${imageClass.value}"`)
-      }
+        if (imageClass) {
+            svg = svg.replace('<svg', `<svg class="${imageClass.value}"`)
+        }
 
-      const start = inlineImage.__location.startOffset
+        const start = inlineImage.__location.startOffset
 
-      const end = inlineImage.__location.endOffset
+        const end = inlineImage.__location.endOffset
 
-      // remove the img tag and add the svg content
+        // remove the img tag and add the svg content
 
-      return html.substring(0, start) + svg + html.substring(end)
+        return html.substring(0, start) + svg + html.substring(end)
   }
 
 }
