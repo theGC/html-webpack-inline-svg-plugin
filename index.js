@@ -507,24 +507,29 @@ class HtmlWebpackInlineSVGPlugin {
      *
      */
     replaceImageWithSVG(html, inlineImage, svg) {
-        // get the class from the input image
+        // Get all passed image attributes except 'inline' and 'src'
+        const imgAttributes = inlineImage.attrs.reduce((acc, attr) => {
+          const { name, value } = attr
+    
+          return name !== "inline" && name !== "src"
+            ? acc + `${name}="${value}" `
+            : ""
+        }, "")
 
-        const imageClass = inlineImage.attrs.find(attr => attr.name === 'class')
-
-        // add class to the output svg
-
-        if (imageClass) {
-            svg = svg.replace('<svg', `<svg class="${imageClass.value}"`)
+        // Set the attributes to the output svg
+    
+        if (imgAttributes) {
+          svg = svg.replace("<svg", `<svg ${imgAttributes}`)
         }
-
+    
         const start = inlineImage.__location.startOffset
-
+    
         const end = inlineImage.__location.endOffset
-
+    
         // remove the img tag and add the svg content
 
         return html.substring(0, start) + svg + html.substring(end)
-  }
+    }
 
 }
 
