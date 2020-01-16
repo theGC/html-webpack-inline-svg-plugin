@@ -490,7 +490,7 @@ class HtmlWebpackInlineSVGPlugin {
                         resolve(html)
 
                     })
-                    .catch((err) => console.log(chalk.red(err.message)))
+                    .catch((err) => console.log(chalk.red(err)))
 
             })
 
