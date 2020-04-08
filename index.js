@@ -41,11 +41,11 @@ class HtmlWebpackInlineSVGPlugin {
 
         // Hook into the html-webpack-plugin processing
 
-        compiler.plugin('compilation', (compilation) => {
+        compiler.hooks.compilation.tap('HtmlWebpackInlineSVGPlugin', compilation => {
 
             if (this.runPreEmit) {
 
-                compilation.plugin('html-webpack-plugin-after-html-processing', (htmlPluginData, callback) => {
+                compilation.hooks.htmlWebpackPluginAfterHtmlProcessing.tap('HtmlWebpackInlineSVGPlugin', htmlPluginData => {
 
                     // get the custom config
 
@@ -59,18 +59,14 @@ class HtmlWebpackInlineSVGPlugin {
 
                             htmlPluginData.html = html || htmlPluginData.html
 
-                            return typeof callback === 'function' ?
-                                callback(null, htmlPluginData) :
-                                htmlPluginData
+                            return htmlPluginData
 
                         })
                         .catch((err) => {
 
                             console.log(err)
 
-                            return typeof callback === 'function' ?
-                                callback(null, htmlPluginData) :
-                                htmlPluginData
+                            return htmlPluginData
 
                         })
 
@@ -78,7 +74,7 @@ class HtmlWebpackInlineSVGPlugin {
 
             } else {
 
-                compilation.plugin('html-webpack-plugin-after-emit', (htmlPluginData, callback) => {
+                compilation.hooks.htmlWebpackPluginAfterHtmlProcessing.tap('HtmlWebpackInlineSVGPlugin', htmlPluginData => {
 
                     // fetch the output path from webpack
 
@@ -91,9 +87,7 @@ class HtmlWebpackInlineSVGPlugin {
 
                         console.log(chalk.red('no output path found on compilation.outputOptions'))
 
-                        return typeof callback === 'function' ?
-                            callback(null, htmlPluginData) :
-                            htmlPluginData
+                        return htmlPluginData
 
                     }
 
@@ -111,9 +105,7 @@ class HtmlWebpackInlineSVGPlugin {
 
                         console.log(chalk.red('no filename found on htmlPluginData.outputName'))
 
-                        return typeof callback === 'function' ?
-                            callback(null, htmlPluginData) :
-                            htmlPluginData
+                        return htmlPluginData
 
                     }
 
@@ -131,11 +123,7 @@ class HtmlWebpackInlineSVGPlugin {
                     })
 
 
-                    // fire callback to pass control to any further plugins
-
-                    return typeof callback === 'function' ?
-                        callback(null, htmlPluginData) :
-                        htmlPluginData
+                    return htmlPluginData
 
                 })
 
@@ -149,7 +137,7 @@ class HtmlWebpackInlineSVGPlugin {
 
         if (!this.runPreEmit) {
 
-            compiler.plugin('after-emit', (compilation, callback) => {
+            compilation.hooks.afterEmit.tap('HtmlWebpackInlineSVGPlugin', compilation => {
 
                 if (!this.files.length) {
 
@@ -161,11 +149,10 @@ class HtmlWebpackInlineSVGPlugin {
 
 
                 // iterate over each file and inline it's SVGs
-                // then return a callback if available
 
                 return Promise.all(this.files.map(file => this.processImages(file.originalHtml)))
                     .then((htmlArray) => Promise.all(htmlArray.map((html, index) => this.updateOutputFile(html, this.files[index].filename))))
-                    .then(() => typeof callback === 'function' ? callback() : null)
+                    .then(() => null)
                     .catch((err) => console.log(chalk.red(err.message)))
 
             })
