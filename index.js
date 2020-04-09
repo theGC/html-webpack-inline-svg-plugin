@@ -7,6 +7,7 @@ const _ = require('lodash')
 const fs = require('fs')
 const SVGO = require('svgo')
 const svgoDefaultConfig = require(path.resolve(__dirname, 'svgo-config.js'))
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 
 /**
@@ -45,7 +46,7 @@ class HtmlWebpackInlineSVGPlugin {
 
             if (this.runPreEmit) {
 
-                compilation.hooks.htmlWebpackPluginAfterHtmlProcessing.tap('HtmlWebpackInlineSVGPlugin', htmlPluginData => {
+                HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tap('HtmlWebpackInlineSVGPlugin', (htmlPluginData, callback) => {
 
                     // get the custom config
 
@@ -59,14 +60,18 @@ class HtmlWebpackInlineSVGPlugin {
 
                             htmlPluginData.html = html || htmlPluginData.html
 
-                            return htmlPluginData
+                            return typeof callback === 'function' ?
+                                callback(null, htmlPluginData) :
+                                htmlPluginData
 
                         })
                         .catch((err) => {
 
                             console.log(err)
 
-                            return htmlPluginData
+                            return typeof callback === 'function' ?
+                                callback(null, htmlPluginData) :
+                                htmlPluginData
 
                         })
 
@@ -74,7 +79,7 @@ class HtmlWebpackInlineSVGPlugin {
 
             } else {
 
-                compilation.hooks.htmlWebpackPluginAfterHtmlProcessing.tap('HtmlWebpackInlineSVGPlugin', htmlPluginData => {
+                HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tap('HtmlWebpackInlineSVGPlugin', (htmlPluginData, callback) => {
 
                     // fetch the output path from webpack
 
@@ -87,7 +92,9 @@ class HtmlWebpackInlineSVGPlugin {
 
                         console.log(chalk.red('no output path found on compilation.outputOptions'))
 
-                        return htmlPluginData
+                        return typeof callback === 'function' ?
+                            callback(null, htmlPluginData) :
+                            htmlPluginData
 
                     }
 
@@ -105,7 +112,9 @@ class HtmlWebpackInlineSVGPlugin {
 
                         console.log(chalk.red('no filename found on htmlPluginData.outputName'))
 
-                        return htmlPluginData
+                        return typeof callback === 'function' ?
+                            callback(null, htmlPluginData) :
+                            htmlPluginData
 
                     }
 
@@ -123,7 +132,11 @@ class HtmlWebpackInlineSVGPlugin {
                     })
 
 
-                    return htmlPluginData
+                    // fire callback to pass control to any further plugins
+
+                    return typeof callback === 'function' ?
+                        callback(null, htmlPluginData) :
+                        htmlPluginData
 
                 })
 
@@ -137,7 +150,7 @@ class HtmlWebpackInlineSVGPlugin {
 
         if (!this.runPreEmit) {
 
-            compilation.hooks.afterEmit.tap('HtmlWebpackInlineSVGPlugin', compilation => {
+            compiler.hooks.afterEmit.tap('HtmlWebpackInlineSVGPlugin', (compilation, callback) => {
 
                 if (!this.files.length) {
 
@@ -149,10 +162,11 @@ class HtmlWebpackInlineSVGPlugin {
 
 
                 // iterate over each file and inline it's SVGs
+                // then return a callback if available
 
                 return Promise.all(this.files.map(file => this.processImages(file.originalHtml)))
                     .then((htmlArray) => Promise.all(htmlArray.map((html, index) => this.updateOutputFile(html, this.files[index].filename))))
-                    .then(() => null)
+                    .then(() => typeof callback === 'function' ? callback() : null)
                     .catch((err) => console.log(chalk.red(err.message)))
 
             })
