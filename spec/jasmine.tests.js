@@ -39,7 +39,7 @@ module.exports = [
 
                 var $ = cheerio.load(data)
 
-                expect($('svg#inline-me').length).toBe(1)
+                expect($('svg#replace-me').length).toBe(1)
 
                 done()
 
@@ -61,7 +61,7 @@ module.exports = [
 
                 var $ = cheerio.load(data)
 
-                expect($('#replace-me').length).toBe(0)
+                expect($('img#replace-me').length).toBe(0)
 
                 done()
 
@@ -83,7 +83,7 @@ module.exports = [
 
                 var $ = cheerio.load(data)
 
-                expect($('#then-replace-me').length).toBe(0)
+                expect($('img#then-replace-me').length).toBe(0)
 
                 done()
 
@@ -205,7 +205,7 @@ module.exports = [
 
                 var $ = cheerio.load(data)
 
-                expect($('#deep-replace-me').length).toBe(0)
+                expect($('svg#deep-replace-me').length).toBe(1)
 
                 done()
 
@@ -227,7 +227,7 @@ module.exports = [
 
                 var $ = cheerio.load(data)
 
-                expect($('svg#deep-inline-me').length).toBe(1)
+                expect($('svg#deep-replace-me').length).toBe(1)
 
                 done()
 

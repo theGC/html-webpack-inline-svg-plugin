@@ -25,6 +25,7 @@ class HtmlWebpackInlineSVGPlugin {
 
         this.userConfig = ''
         this.outputPath = ''
+        this.inlineAll = _.get(options, 'inlineAll', false)
 
         this.files = []
 
@@ -404,9 +405,10 @@ class HtmlWebpackInlineSVGPlugin {
     isNodeValidInlineImage (node) {
 
         return !!(
-            node.nodeName === 'img' &&
-            _.filter(node.attrs, { name: 'inline' }).length &&
-            this.getImagesSrc(node))
+            node.nodeName === 'img'
+            && ((this.inlineAll && _.filter(node.attrs, { name: 'inline-exclude' }).length === 0)
+                || _.filter(node.attrs, { name: 'inline' }).length)
+            && this.getImagesSrc(node))
 
 
     }
@@ -516,7 +518,7 @@ class HtmlWebpackInlineSVGPlugin {
             return name !== 'inline'
                 && name !== 'src'
                 ? acc + `${name}="${value}" `
-                : ''
+                : acc
 
         }, '')
 

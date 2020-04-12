@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Inline SVG Tests index</title>
+        <style>
+
+            .icon {
+                display: inline-block;
+                width: 1em;
+                height: 1em;
+                stroke-width: 0;
+                stroke: currentColor;
+                fill: currentColor;
+            }
+
+        </style>
+
+        <script src="test.js"></script>
+
+    </head>
+
+    <body>
+
+        <div>
+            <p>
+                <span>if below SVG is inlined correctly we can reference its content:</span>
+                <svg class="icon mood-good"><use xlink:href="#icon-mood-good"></use></svg>
+            </p>
+        </div>
+
+        <section>
+            <h2>Deep Replace</h2>
+            <div>
+                <span>
+                    <img id="deep-replace-me" src="images/face.svg">
+                </span>
+            </div>
+        </section>
+
+        <h2>Inline images</h2>
+
+        <img id="replace-me" src="~img/moods.svg">
+
+        <img id="exclude-replace-me" inline-exclude src="images/another-face.svg">
+
+        <img id="not-an-svg" src="images/not-an-svg.png">
+
+        <div id="do-not-decode"><?= $foo->bar; ?></div>
+
+        should output broken tags</p>
+
+        <p>should output unclosed tags
+
+    </body>
+
+</html>

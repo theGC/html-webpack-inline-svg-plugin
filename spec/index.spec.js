@@ -7,8 +7,10 @@ var webpack = require('webpack')
 var webpackConfig = require('./webpack.base.config')
 var webpackPostEmitConfig = require('./webpack.post-emit.config')
 var webpackPreEmitConfig = require('./webpack.pre-emit.config')
+var webpackInlineAllConfig = require('./webpack.inline-all.config')
 var HtmlWebpackInlineSVGPlugin = require('../')
 var jasmineTests = require('./jasmine.tests')
+var jasmineInlineAllTests = require('./jasmine-inline-all.tests')
 var rm = require('rimraf')
 
 rm(webpackConfig.outputDir, (err) => {
@@ -90,3 +92,38 @@ describe('HtmlWebpackInlineSVGPlugin: pre webpack resolve', function () {
 
 })
 
+
+describe('HtmlWebpackInlineSVGPlugin: inlineAll resolve', function () {
+
+    beforeAll(function (done) {
+
+        // clone the config
+
+        const webpackTestConfig = Object.assign({}, webpackConfig.options, webpackInlineAllConfig)
+
+
+        // run webpack
+
+        webpack(webpackTestConfig, (err) => {
+
+            expect(err).toBeFalsy()
+
+            // callbck is fired before all files hve been written to disk
+            // due to use of after-emit - place a timeout to try and avoid the issue
+
+            setTimeout(done, 2000)
+
+        })
+
+    })
+
+
+    // run all-images tests
+
+    jasmineInlineAllTests.forEach((test) => {
+
+        it(test.label, test.func)
+
+    })
+
+})
