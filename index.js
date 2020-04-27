@@ -18,9 +18,11 @@ class HtmlWebpackInlineSVGPlugin {
 
     constructor (options) {
 
-        if (options && options.runPreEmit) {
+        if (options) {
 
-            this.runPreEmit = true
+            if (options.runPreEmit) this.runPreEmit = true
+
+            if (options.inlineAll) this.inlineAll = true
 
         }
 
@@ -410,10 +412,10 @@ class HtmlWebpackInlineSVGPlugin {
      */
     isNodeValidInlineImage (node) {
 
-        return !!(
-            node.nodeName === 'img' &&
-            _.filter(node.attrs, { name: 'inline' }).length &&
-            this.getImagesSrc(node))
+        return !!(node.nodeName === 'img'
+            && (this.inlineAll
+                || _.filter(node.attrs, { name: 'inline' }).length)
+            && this.getImagesSrc(node))
 
 
     }

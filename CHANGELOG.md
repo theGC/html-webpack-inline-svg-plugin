@@ -1,3 +1,7 @@
+## v2.0.1
+
+* added `inlineAll` option to inline all svgs the parser finds
+
 ## v2.0.0
 
 * support webpack 4

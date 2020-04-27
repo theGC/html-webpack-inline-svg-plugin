@@ -146,6 +146,22 @@ Therefore with the above project structure, and `runPreEmit` set to `true`, inli
 
 ## Config
 
+#### HtmlWebpackInlineSVGPlugin Options
+
+```javascript
+new HtmlWebpackInlineSVGPlugin({
+    // default: false
+    // described above
+    runPreEmit: {Boolean},
+
+    // default: false
+    // if true will inline all svgs within the parsed html
+    inlineAll: {Boolean},
+})
+```
+
+#### SVGO
+
 To configure SVGO (module used to optimise your SVGs), add an `svgoConfig` object to your `html-webpack-plugin` config:
 
 ```javascript
