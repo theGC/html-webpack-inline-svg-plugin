@@ -22,7 +22,7 @@ Inline SVG extension for the HTML Webpack Plugin
 
 ## Webpack Support
 
-The latest version of this package supports webpoack 4. All versions marked v2.x.x will target webpack 4 and html-webpack-plugin v4.
+The latest version of this package supports webpack 4. All versions marked v2.x.x will target webpack 4 and html-webpack-plugin v4.
 
 For webpack 3 and html-webpack-plugin v3 support use v1.3.0 of this package.
 
