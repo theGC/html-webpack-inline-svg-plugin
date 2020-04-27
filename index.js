@@ -7,6 +7,7 @@ const _ = require('lodash')
 const fs = require('fs')
 const SVGO = require('svgo')
 const svgoDefaultConfig = require(path.resolve(__dirname, 'svgo-config.js'))
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 
 /**
@@ -41,44 +42,50 @@ class HtmlWebpackInlineSVGPlugin {
 
         // Hook into the html-webpack-plugin processing
 
-        compiler.plugin('compilation', (compilation) => {
+        compiler.hooks.compilation.tap('HtmlWebpackInlineSVGPlugin', (compilation) => {
 
             if (this.runPreEmit) {
 
-                compilation.plugin('html-webpack-plugin-after-html-processing', (htmlPluginData, callback) => {
+                HtmlWebpackPlugin
+                    .getHooks(compilation)
+                    .afterTemplateExecution
+                    .tapAsync('HtmlWebpackInlineSVGPlugin', (htmlPluginData, callback) => {
 
-                    // get the custom config
+                        // get the custom config
 
-                    this.getUserConfig(htmlPluginData)
+                        this.getUserConfig(htmlPluginData)
 
 
-                    // process the images
+                        // process the images
 
-                    return this.processImages(htmlPluginData.html)
-                        .then((html) => {
+                        return this.processImages(htmlPluginData.html)
+                            .then((html) => {
 
-                            htmlPluginData.html = html || htmlPluginData.html
+                                htmlPluginData.html = html || htmlPluginData.html
 
-                            return typeof callback === 'function' ?
-                                callback(null, htmlPluginData) :
-                                htmlPluginData
+                                return typeof callback === 'function' ?
+                                    callback(null, htmlPluginData) :
+                                    htmlPluginData
 
-                        })
-                        .catch((err) => {
+                            })
+                            .catch((err) => {
 
-                            console.log(err)
+                                console.log(chalk.red(err))
 
-                            return typeof callback === 'function' ?
-                                callback(null, htmlPluginData) :
-                                htmlPluginData
+                                return typeof callback === 'function' ?
+                                    callback(null, htmlPluginData) :
+                                    htmlPluginData
 
-                        })
+                            })
 
-                })
+                    })
 
             } else {
 
-                compilation.plugin('html-webpack-plugin-after-emit', (htmlPluginData, callback) => {
+                HtmlWebpackPlugin
+                    .getHooks(compilation)
+                    .beforeEmit
+                    .tapAsync('HtmlWebpackInlineSVGPlugin', (htmlPluginData, callback) => {
 
                     // fetch the output path from webpack
 
@@ -120,7 +127,7 @@ class HtmlWebpackInlineSVGPlugin {
 
                     // get the emitted HTML - prior to SVG's being inlined
 
-                    const originalHtml = htmlPluginData.html.source()
+                    const originalHtml = htmlPluginData.html
 
 
                     // add filename and original html to the file array
@@ -149,7 +156,7 @@ class HtmlWebpackInlineSVGPlugin {
 
         if (!this.runPreEmit) {
 
-            compiler.plugin('after-emit', (compilation, callback) => {
+            compiler.hooks.afterEmit.tap('HtmlWebpackInlineSVGPlugin', (compilation) => {
 
                 if (!this.files.length) {
 
@@ -166,7 +173,7 @@ class HtmlWebpackInlineSVGPlugin {
                 return Promise.all(this.files.map(file => this.processImages(file.originalHtml)))
                     .then((htmlArray) => Promise.all(htmlArray.map((html, index) => this.updateOutputFile(html, this.files[index].filename))))
                     .then(() => typeof callback === 'function' ? callback() : null)
-                    .catch((err) => console.log(chalk.red(err.message)))
+                    .catch((err) => console.log(chalk.red(err)))
 
             })
 
@@ -244,7 +251,7 @@ class HtmlWebpackInlineSVGPlugin {
         return new Promise((resolve, reject) => {
 
             const documentFragment = parse5.parseFragment(html, {
-                locationInfo: true
+                sourceCodeLocationInfo: true
             })
 
 
@@ -315,7 +322,7 @@ class HtmlWebpackInlineSVGPlugin {
             // rebuild the document fragment each time with the updated html
 
             const documentFragment = parse5.parseFragment(html, {
-                locationInfo: true,
+                sourceCodeLocationInfo: true,
             })
 
             const inlineImage = this.getFirstInlineImage(documentFragment)
@@ -528,9 +535,9 @@ class HtmlWebpackInlineSVGPlugin {
 
         }
 
-        const start = inlineImage.__location.startOffset
+        const start = inlineImage.sourceCodeLocation.startOffset
 
-        const end = inlineImage.__location.endOffset
+        const end = inlineImage.sourceCodeLocation.endOffset
 
         // remove the img tag and add the svg content
         return html.substring(0, start) + svg + html.substring(end)
