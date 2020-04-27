@@ -8,7 +8,7 @@
         "svgo-config.js"
     ],
     "scripts": {
-        "prepublish": "npm run test",
+        "prepublishOnly": "npm run test",
         "test": "jasmine",
         "build": "node spec/build.js"
     },
