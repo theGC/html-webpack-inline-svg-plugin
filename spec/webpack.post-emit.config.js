@@ -14,35 +14,25 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.(svg)(\?.*)?$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: 'images/svgs/[name].[ext]',
-                        }
-                    }
-                ],
+                test: /\.svg$/i,
+                loader: 'file-loader',
+                options: {
+                    name: 'images/svgs/[name].[ext]',
+                    esModule: false,
+                },
             },
             {
-                test: /\.(png|jpe?g|gif)(\?.*)?$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: 'images/[name].[ext]',
-                        }
-                    }
-                ],
+                test: /\.(png|jpe?g|gif)$/i,
+                loader: 'file-loader',
+                options: {
+                    name: 'images/[name].[ext]',
+                    esModule: false,
+                },
             },
             {
-                test: /\.(html)$/,
-                use: [
-                    {
-                        loader: 'html-loader',
-                        options: {}
-                    }
-                ],
+                test: /\.html$/i,
+                loader: 'html-loader',
+                options: {},
             },
         ]
     },

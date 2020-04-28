@@ -1,6 +1,4 @@
 var path = require('path')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
-var HtmlWebpackInlineSVGPlugin = require('../')
 var OUTPUT_DIR = path.join(__dirname, '../dist')
 
 module.exports = {

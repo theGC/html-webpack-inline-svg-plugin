@@ -137,63 +137,6 @@ module.exports = [
     },
 
     {
-        label: 'do not touch broken tags',
-        func: function (done) {
-
-            var htmlFile = path.resolve(webpackConfig.outputDir, 'index.html')
-
-            fs.readFile(htmlFile, 'utf8', function (err, data) {
-
-                expect(err).toBeFalsy()
-
-                var re1 = /should output broken tags<\/p>/gi;
-
-                expect(data.match(re1))
-                    .not.toBe(null)
-
-                var re2 = /<p>should output unclosed tags/gi;
-
-                expect(data.match(re2))
-                    .not.toBe(null)
-
-                done()
-
-            })
-
-        },
-
-    },
-
-    /**
-     * Partial is included to test situations where templates are only parts of a pages output
-     * i.e separate header and footer templates
-     * resulting in broken opening / closing tags
-     *
-     */
-    {
-        label: 'allow partials to have broken tags',
-        func: function (done) {
-
-            var htmlFile = path.resolve(webpackConfig.outputDir, 'partial.html')
-
-            fs.readFile(htmlFile, 'utf8', function (err, data) {
-
-                expect(err).toBeFalsy()
-
-                const dataSquashed = data.replace(/\s/g,'')
-
-                expect(dataSquashed.startsWith('<\/p><\/div>'))
-                    .toBe(true)
-
-                done()
-
-            })
-
-        },
-
-    },
-
-    {
         label: 'should replace nested inline imgs',
         func: function (done) {
 

@@ -34,7 +34,7 @@ describe('HtmlWebpackInlineSVGPlugin: post webpack resolve', function () {
 
             expect(err).toBeFalsy()
 
-            // callbck is fired before all files hve been written to disk
+            // callbck is fired before all files have been written to disk
             // due to use of after-emit - place a timeout to try and avoid the issue
 
             setTimeout(done, 2000)
@@ -72,7 +72,7 @@ describe('HtmlWebpackInlineSVGPlugin: pre webpack resolve', function () {
 
             expect(err).toBeFalsy()
 
-            // callbck is fired before all files hve been written to disk
+            // callbck is fired before all files have been written to disk
             // due to use of after-emit - place a timeout to try and avoid the issue
 
             setTimeout(done, 2000)

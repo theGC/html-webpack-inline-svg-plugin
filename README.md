@@ -6,6 +6,7 @@ Inline SVG extension for the HTML Webpack Plugin
 
 **Readme Index**
 
+* [Versions](#versions)
 * [Overview](#overview)
 * [Installation](#installation)
 * [Usage](#usage)
@@ -18,6 +19,20 @@ Inline SVG extension for the HTML Webpack Plugin
 * [Known Issues](#known-issues)
 * [Contribution](#contribution)
 * [License](#license)
+
+## Webpack Support
+
+The latest version of this package supports webpack 4. All versions marked v2.x.x will target webpack 4 and html-webpack-plugin v4.
+
+For webpack 3 and html-webpack-plugin v3 support use v1.3.0 of this package.
+
+### v2.x.x
+Support webpack v4
+Support html-webpack-plugin v4
+
+### v1.3.0
+Support webpack v3
+Support html-webpack-plugin v3
 
 # Overview
 
@@ -194,13 +209,11 @@ The plugin accepts three options:
 * Ignores broken tags - incase you are outputting templates for various parts of the page
 * Performs no html decoding so supports language tags, i.e. `<?php echo 'foo bar'; ?>`
 
-## Known Issues
-
-* none currently
-
 ## Contribution
 
 You're free to contribute to this project by submitting issues and/or pull requests. This project is test-driven, so keep in mind that every change and new feature should be covered by tests.
+
+I'm happy for someone to take over the project as I don't find myself using it anylonger due to changes in workflow. Therefore others are likely in a better position to support this project and roll out the right enhancements.
 
 ## License
 
