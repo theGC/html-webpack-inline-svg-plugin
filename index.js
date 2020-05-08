@@ -77,8 +77,8 @@ class HtmlWebpackInlineSVGPlugin {
                     })
 
             } else {
-
-                HtmlWebpackPlugin
+                // https://github.com/jantimon/html-webpack-plugin/issues/1091
+                compiler.options.plugins.find((plugin) => plugin.constructor.name === 'HtmlWebpackPlugin').constructor
                     .getHooks(compilation)
                     .beforeEmit
                     .tapAsync('HtmlWebpackInlineSVGPlugin', (htmlPluginData, callback) => {
