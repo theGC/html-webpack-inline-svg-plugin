@@ -18,14 +18,8 @@ class HtmlWebpackInlineSVGPlugin {
 
     constructor (options) {
 
-        if (options) {
-
-            if (options.runPreEmit) this.runPreEmit = true
-
-            if (options.inlineAll) this.inlineAll = true
-
-        }
-
+        this.runPreEmit = _.get(options, 'runPreEmit', false)
+        this.inlineAll = _.get(options, 'inlineAll', false)
         this.userConfig = ''
         this.outputPath = ''
 
@@ -83,8 +77,8 @@ class HtmlWebpackInlineSVGPlugin {
                     })
 
             } else {
-
-                HtmlWebpackPlugin
+                // https://github.com/jantimon/html-webpack-plugin/issues/1091
+                compiler.options.plugins.find((plugin) => plugin.constructor.name === 'HtmlWebpackPlugin').constructor
                     .getHooks(compilation)
                     .beforeEmit
                     .tapAsync('HtmlWebpackInlineSVGPlugin', (htmlPluginData, callback) => {
@@ -412,8 +406,9 @@ class HtmlWebpackInlineSVGPlugin {
      */
     isNodeValidInlineImage (node) {
 
-        return !!(node.nodeName === 'img'
-            && (this.inlineAll
+        return !!(
+            node.nodeName === 'img'
+            && ((this.inlineAll && _.filter(node.attrs, { name: 'inline-exclude' }).length === 0)
                 || _.filter(node.attrs, { name: 'inline' }).length)
             && this.getImagesSrc(node))
 
@@ -525,7 +520,7 @@ class HtmlWebpackInlineSVGPlugin {
             return name !== 'inline'
                 && name !== 'src'
                 ? acc + `${name}="${value}" `
-                : ''
+                : acc
 
         }, '')
 

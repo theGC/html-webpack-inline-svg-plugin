@@ -1,9 +1,6 @@
 var webpack = require('webpack')
 var webpackConfig = require('./webpack.base.config')
-var webpackPostEmitConfig = require('./webpack.post-emit.config')
 var webpackPreEmitConfig = require('./webpack.pre-emit.config')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
-var HtmlWebpackInlineSVGPlugin = require('../')
 var chalk = require('chalk')
 var rm = require('rimraf')
 

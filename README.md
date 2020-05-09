@@ -124,59 +124,82 @@ If an alias was in place for the images directory, i.e.
 ```
 Then the svg can be inlined with: `<img inline src="~img/icons.svg">`. This method would require the use of **loaders** on your templates as shown above in point 2.
 
-#### Setting `runPreEmit` option
-If you aren't using **loaders** to resolve file locations, and would prefer to reference image paths relative to the **root** of your project (where your `package.json` file resides) then set the plugins `runPreEmit` config option to `true`:
+#### Duplicated attributes
+All the attributes of a `<img/>` element excepting `src` and `inline` will be copied to the inlined `<svg/>` element. Attributes like `id` or `class` will be copied to the resulting root of the `<svg/>` element and if the original SVG file already had these attributes they will be duplicated (and not replaced) on the resulting `<svg/>` element, though the attributes coming from the `<img/>` will appear first and [any subsequent duplicated attribute from the original SVG will be ignored by the browser](https://stackoverflow.com/questions/26341507/can-an-html-element-have-the-same-attribute-twice).
 
-```javascript
-plugins: [
-    new HtmlWebpackPlugin(),
-    new HtmlWebpackInlineSVGPlugin({
-        runPreEmit: true,
-    })
-]
-```
-
-The plugin will now run prior to **html-webpack-plugin** saving your templates to your output directory. It will also expect all `<img inline` **src** attributes to be relative to your `package.json` file.
-
-Therefore with the above project structure, and `runPreEmit` set to `true`, inlining icons.svg would look like:
+For example:
 
 ```html
-<img inline src="src/images/icons.svg">
+<img inline src="images/icons.svg" id="myImageIMG" class="square"> <!-- img element to be replaced  -->
+
+<svg id="myImageSVG">...</svg> <!-- icons.svg file to be inlined  -->
 ```
 
-## Config
+will result in:
 
-#### HtmlWebpackInlineSVGPlugin Options
-
-```javascript
-new HtmlWebpackInlineSVGPlugin({
-    // default: false
-    // described above
-    runPreEmit: {Boolean},
-
-    // default: false
-    // if true will inline all svgs within the parsed html
-    inlineAll: {Boolean},
-})
+```html
+<svg id="myImageIMG" class="square" id="myImageSVG">...</svg>
 ```
 
-#### SVGO
+The broswer will use `id=""myImageIMG"` and not `id="myImageSVG"`. It's however a better approach if you avoid having any duplicated attribute at all and only putting the required ones on the `<img>` element.
 
-To configure SVGO (module used to optimise your SVGs), add an `svgoConfig` object to your `html-webpack-plugin` config:
+## Config options
 
-```javascript
-plugins: [
-    new HtmlWebpackPlugin({
-        svgoConfig: {
-            removeTitle: false,
-            removeViewBox: true,
-        },
-    }),
-    new HtmlWebpackInlineSVGPlugin()
-]
-```
+The plugin accepts three options:
 
-For a full list of the SVGO config (default) params we are using check out: [svgo-config.js](svgo-config.js). The config you set is merged with our defaults, it does not replace it.
+- `runPreEmit`: defaults to `false`. If you aren't using **loaders** to resolve file locations, and would prefer to reference image paths relative to the **root** of your project (where your `package.json` file resides) then set the plugins `runPreEmit` config option to `true`:
+
+   ```javascript
+   plugins: [
+       new HtmlWebpackPlugin(),
+       new HtmlWebpackInlineSVGPlugin({
+           runPreEmit: true,
+       })
+   ]
+   ```
+
+   The plugin will now run prior to **html-webpack-plugin** saving your templates to your output directory. It will also expect all `<img inline` **src** attributes to be relative to your `package.json` file.
+
+   Therefore with the above project structure, and `runPreEmit` set to `true`, inlining icons.svg would look like:
+
+   ```html
+   <img inline src="src/images/icons.svg">
+   ```
+
+- `inlineAll`: defaults to `false`. It will inline all SVG images on the template without the need of the `inline` attribute on every image:
+   ```javascript
+   plugins: [
+       new HtmlWebpackPlugin(),
+       new HtmlWebpackInlineSVGPlugin({
+           inlineAll: true
+       })
+   ]
+   ```
+
+   If `inlineAll` option is enabled you can use the `inline-exclude` attribute to exclude a particular image from being inlined:
+
+   ```html
+   <div>
+       <img src="src/images/icon1.svg"> <!-- it will be inlined -->
+       <img inline-exclude src="src/images/icon2.svg"> <!-- it won't be inlined -->
+   </div>
+   ```
+
+- `svgoConfig`: to configure SVGO (module used to optimise your SVGs), add an `svgoConfig` object to your `html-webpack-plugin` config:
+
+   ```javascript
+   plugins: [
+       new HtmlWebpackPlugin({
+           svgoConfig: {
+               removeTitle: false,
+               removeViewBox: true,
+           },
+       }),
+       new HtmlWebpackInlineSVGPlugin()
+   ]
+   ```
+
+   For a full list of the SVGO config (default) params we are using check out: [svgo-config.js](svgo-config.js). The config you set is merged with our defaults, it does not replace it.
 
 ## Features
 
