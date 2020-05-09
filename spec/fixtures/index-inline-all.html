@@ -23,7 +23,6 @@
     <body>
 
         <div>
-            <p>should not touch this: <img width="20px" height="auto" class="leave-me" src="images/face.svg"></p>
             <p>
                 <span>if below SVG is inlined correctly we can reference its content:</span>
                 <svg class="icon mood-good"><use xlink:href="#icon-mood-good"></use></svg>
@@ -34,20 +33,24 @@
             <h2>Deep Replace</h2>
             <div>
                 <span>
-                    <img id="deep-replace-me" inline src="images/face.svg">
+                    <img id="deep-replace-me" src="images/face.svg">
                 </span>
             </div>
         </section>
 
         <h2>Inline images</h2>
 
-        <img id="replace-me" inline src="~img/moods.svg">
+        <img id="replace-me" src="~img/moods.svg">
 
-        <img id="then-replace-me" inline src="images/another-face.svg">
+        <img id="exclude-replace-me" inline-exclude src="images/another-face.svg">
 
-        <img id="not-an-svg" inline src="images/not-an-svg.png">
+        <img id="not-an-svg" src="images/not-an-svg.png">
 
         <div id="do-not-decode"><?= $foo->bar; ?></div>
+
+        should output broken tags</p>
+
+        <p>should output unclosed tags
 
     </body>
 
