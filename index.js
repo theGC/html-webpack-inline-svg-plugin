@@ -18,10 +18,10 @@ class HtmlWebpackInlineSVGPlugin {
 
     constructor (options) {
 
-        this.userConfig = ''
-        this.outputPath = ''
         this.runPreEmit = _.get(options, 'runPreEmit', false)
         this.inlineAll = _.get(options, 'inlineAll', false)
+        this.userConfig = ''
+        this.outputPath = ''
 
         this.files = []
 
