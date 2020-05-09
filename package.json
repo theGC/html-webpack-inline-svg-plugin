@@ -1,6 +1,6 @@
 {
     "name": "html-webpack-inline-svg-plugin",
-    "version": "2.0.4",
+    "version": "2.1.1",
     "description": "Embed svg inline when using the html webpack plugin",
     "main": "index.js",
     "files": [
