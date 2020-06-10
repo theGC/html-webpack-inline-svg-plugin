@@ -5,6 +5,7 @@ var webpackConfig = require('./webpack.base.config')
 var webpackPostEmitConfig = require('./webpack.post-emit.config')
 var webpackPreEmitConfig = require('./webpack.pre-emit.config')
 var webpackInlineAllConfig = require('./webpack.inline-all.config')
+var webpackUseNetworkConfig = require('./webpack.use-network.config')
 var jasmineTests = require('./jasmine.tests')
 var jasmineInlineAllTests = require('./jasmine-inline-all.tests')
 var rm = require('rimraf')
@@ -30,7 +31,42 @@ describe('HtmlWebpackInlineSVGPlugin: post webpack resolve', function () {
 
             expect(err).toBeFalsy()
 
-            // callbck is fired before all files have been written to disk
+            // callback is fired before all files have been written to disk
+            // due to use of after-emit - place a timeout to try and avoid the issue
+
+            setTimeout(done, 2000)
+
+        })
+
+    })
+
+
+    // run all tests
+
+    jasmineTests.forEach((test) => {
+
+        it(test.label, test.func)
+
+    })
+
+})
+
+describe('HtmlWebpackInlineSVGPlugin: useNetworkToLoadImages webpack resolve', function () {
+
+    beforeAll(function (done) {
+
+        // clone the config
+
+        const webpackTestConfig = Object.assign({}, webpackConfig.options, webpackUseNetworkConfig)
+
+
+        // run webpack
+
+        webpack(webpackTestConfig, (err) => {
+
+            expect(err).toBeFalsy()
+
+            // callback is fired before all files have been written to disk
             // due to use of after-emit - place a timeout to try and avoid the issue
 
             setTimeout(done, 2000)
@@ -68,7 +104,7 @@ describe('HtmlWebpackInlineSVGPlugin: pre webpack resolve', function () {
 
             expect(err).toBeFalsy()
 
-            // callbck is fired before all files have been written to disk
+            // callback is fired before all files have been written to disk
             // due to use of after-emit - place a timeout to try and avoid the issue
 
             setTimeout(done, 2000)
@@ -104,7 +140,7 @@ describe('HtmlWebpackInlineSVGPlugin: inlineAll resolve', function () {
 
             expect(err).toBeFalsy()
 
-            // callbck is fired before all files hve been written to disk
+            // callback is fired before all files hve been written to disk
             // due to use of after-emit - place a timeout to try and avoid the issue
 
             setTimeout(done, 2000)

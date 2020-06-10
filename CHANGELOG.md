@@ -1,3 +1,7 @@
+## v2.2.1
+
+* loading images from network too
+
 ## v2.0.1
 
 * added `inlineAll` option to inline all svgs the parser finds

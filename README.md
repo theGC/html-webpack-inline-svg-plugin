@@ -201,6 +201,14 @@ The plugin accepts three options:
 
    For a full list of the SVGO config (default) params we are using check out: [svgo-config.js](svgo-config.js). The config you set is merged with our defaults, it does not replace it.
 
+- `fallbackToUseNetworkToLoadImages`: The consumer can point the images to online SVG resources. Example:
+
+    ```html
+   <div>
+       <img inline src="https://badge.fury.io/js/html-webpack-inline-svg-plugin.svg"> <!-- it will be inlined from the online SVG -->
+   </div>
+   ```
+
 ## Features
 
 * Optimises / minimizes the output SVG

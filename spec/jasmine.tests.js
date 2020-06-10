@@ -30,7 +30,6 @@ module.exports = [
     {
         label: 'should inline imgs with inline attribute',
         func: function (done) {
-
             var htmlFile = path.resolve(webpackConfig.outputDir, 'index.html')
 
             fs.readFile(htmlFile, 'utf8', function (err, data) {
