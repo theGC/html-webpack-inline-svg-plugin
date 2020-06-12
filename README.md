@@ -201,7 +201,7 @@ The plugin accepts three options:
 
    For a full list of the SVGO config (default) params we are using check out: [svgo-config.js](svgo-config.js). The config you set is merged with our defaults, it does not replace it.
 
-- `fallbackToUseNetworkToLoadImages`: The consumer can point the images to online SVG resources. Example:
+- `allowFromUrl`: defaults to `false`. It allows to use SVG images coming from an URL online in addition to local files. For example:
 
     ```html
    <div>

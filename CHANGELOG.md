@@ -1,6 +1,6 @@
-## v2.2.1
+## v2.2.0
 
-* loading images from network too
+* _Ability added to load SVGs from an URL (`<img inline src="https://host.com/image.svg">`)._
 
 ## v2.0.1
 

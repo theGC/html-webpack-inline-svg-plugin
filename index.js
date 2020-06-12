@@ -21,7 +21,7 @@ class HtmlWebpackInlineSVGPlugin {
 
         this.runPreEmit = _.get(options, 'runPreEmit', false)
         this.inlineAll = _.get(options, 'inlineAll', false)
-        this.fallbackToUseNetworkToLoadImages = _.get(options, 'fallbackToUseNetworkToLoadImages', false)
+        this.allowFromUrl = _.get(options, 'allowFromUrl', false)
         this.userConfig = ''
         this.outputPath = ''
 
@@ -327,7 +327,7 @@ class HtmlWebpackInlineSVGPlugin {
 
             if (inlineImage) {
 
-                this.processOutputHtmlReadingDataFromFileSystemOrNetwork(html, inlineImage)
+                this.processOutputHtml(html, inlineImage)
                     .then((html) => {
 
                         resolve(html)
@@ -454,7 +454,7 @@ class HtmlWebpackInlineSVGPlugin {
      * @returns {Promise}
      *
      */
-    optimizeTheSvgRetrievedData ({ html, inlineImage, data, resolve }) {
+    optimiseSvg ({ html, inlineImage, data, resolve }) {
         const configObj = Object.assign(svgoDefaultConfig, this.userConfig)
 
         const config = {}
@@ -492,7 +492,7 @@ class HtmlWebpackInlineSVGPlugin {
      * @returns {Promise}
      *
      */
-    processOutputHtmlReadingDataFromFileSystemOrNetwork (html, inlineImage) {
+    processOutputHtml (html, inlineImage) {
 
         return new Promise((resolve, reject) => {
 
@@ -509,7 +509,7 @@ class HtmlWebpackInlineSVGPlugin {
             fs.readFile(path.resolve(this.outputPath, svgSrc), 'utf8', (err, data) => {
                 if (err) {
                     // loading from the filesystem failed
-                    if (!this.fallbackToUseNetworkToLoadImages) {
+                    if (!this.allowFromUrl) {
                         reject(err)
                         return
                     }
@@ -525,13 +525,13 @@ class HtmlWebpackInlineSVGPlugin {
                             return
                         }
 
-                        this.optimizeTheSvgRetrievedData({ html, inlineImage, data, resolve })
+                        this.optimiseSvg({ html, inlineImage, data, resolve })
                     })
 
                     return
                 }
 
-                this.optimizeTheSvgRetrievedData({ html, inlineImage, data, resolve })
+                this.optimiseSvg({ html, inlineImage, data, resolve })
 
             })
 

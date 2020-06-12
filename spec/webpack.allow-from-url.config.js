@@ -43,10 +43,10 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             filename: path.resolve(webpackConfig.outputDir, 'partial.html'),
-            template: path.join(__dirname, 'fixtures', 'partial-use-network.html'),
+            template: path.join(__dirname, 'fixtures', 'partial-allow-from-url.html'),
         }),
         new HtmlWebpackInlineSVGPlugin({
-            fallbackToUseNetworkToLoadImages: true
+            allowFromUrl: true
         }),
     ],
 

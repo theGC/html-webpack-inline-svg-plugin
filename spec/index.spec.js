@@ -5,7 +5,7 @@ var webpackConfig = require('./webpack.base.config')
 var webpackPostEmitConfig = require('./webpack.post-emit.config')
 var webpackPreEmitConfig = require('./webpack.pre-emit.config')
 var webpackInlineAllConfig = require('./webpack.inline-all.config')
-var webpackUseNetworkConfig = require('./webpack.use-network.config')
+var webpackAllowFromUrlConfig = require('./webpack.allow-from-url.config')
 var jasmineTests = require('./jasmine.tests')
 var jasmineInlineAllTests = require('./jasmine-inline-all.tests')
 var rm = require('rimraf')
@@ -57,7 +57,7 @@ describe('HtmlWebpackInlineSVGPlugin: useNetworkToLoadImages webpack resolve', f
 
         // clone the config
 
-        const webpackTestConfig = Object.assign({}, webpackConfig.options, webpackUseNetworkConfig)
+        const webpackTestConfig = Object.assign({}, webpackConfig.options, webpackAllowFromUrlConfig)
 
 
         // run webpack
