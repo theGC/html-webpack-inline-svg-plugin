@@ -42,8 +42,8 @@ module.exports = {
             template: path.join(__dirname, 'fixtures', 'index.html'),
         }),
         new HtmlWebpackPlugin({
-            filename: path.resolve(webpackConfig.outputDir, 'partial.html'),
-            template: path.join(__dirname, 'fixtures', 'partial-allow-from-url.html'),
+            filename: path.resolve(webpackConfig.outputDir, 'index-allow-from-url.html'),
+            template: path.join(__dirname, 'fixtures', 'index-allow-from-url.html')
         }),
         new HtmlWebpackInlineSVGPlugin({
             allowFromUrl: true

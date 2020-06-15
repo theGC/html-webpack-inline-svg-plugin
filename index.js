@@ -8,7 +8,7 @@ const fs = require('fs')
 const SVGO = require('svgo')
 const svgoDefaultConfig = require(path.resolve(__dirname, 'svgo-config.js'))
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const request = require("request")
+const axios = require('axios')
 
 
 /**
@@ -493,40 +493,31 @@ class HtmlWebpackInlineSVGPlugin {
      *
      */
     processOutputHtml (html, inlineImage) {
-
         return new Promise((resolve, reject) => {
 
             const svgSrc = this.getImagesSrc(inlineImage)
 
-
             // if the image isn't valid resolve
-
             if (!svgSrc) return resolve(html)
 
-
             // read in the svg
-
             fs.readFile(path.resolve(this.outputPath, svgSrc), 'utf8', (err, data) => {
                 if (err) {
                     // loading from the filesystem failed
                     if (!this.allowFromUrl) {
-                        reject(err)
-                        return
+                        return reject(err)
                     }
 
-                    request.get({
-                        url: svgSrc,
-                        strictSSL: false
-                    }, (error, { body: data }) => {
+                    axios.get(svgSrc)
+                        .then(({ status, data }) => {
+                            if (!status === 200) {
+                                resolve(html)
+                                return
+                            }
 
-                        if (error) {
-                            // loading from network failed
-                            reject(error)
-                            return
-                        }
-
-                        this.optimizeSvg({ html, inlineImage, data, resolve })
-                    })
+                            this.optimizeSvg({ html, inlineImage, svgSrc, data, resolve })
+                        })
+                        .catch(() => resolve(html))
 
                     return
                 }

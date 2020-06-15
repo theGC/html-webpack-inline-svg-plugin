@@ -1,6 +1,8 @@
 /* eslint-env jasmine */
 var chalk = require('chalk')
 var webpack = require('webpack')
+var axios = require('axios')
+var MockAdapter = require('axios-mock-adapter')
 var webpackConfig = require('./webpack.base.config')
 var webpackPostEmitConfig = require('./webpack.post-emit.config')
 var webpackPreEmitConfig = require('./webpack.pre-emit.config')
@@ -8,6 +10,7 @@ var webpackInlineAllConfig = require('./webpack.inline-all.config')
 var webpackAllowFromUrlConfig = require('./webpack.allow-from-url.config')
 var jasmineTests = require('./jasmine.tests')
 var jasmineInlineAllTests = require('./jasmine-inline-all.tests')
+var jasmineAllowFromUrlTests = require('./jasmine-allow-from-url.tests')
 var rm = require('rimraf')
 
 rm(webpackConfig.outputDir, (err) => {
@@ -52,11 +55,16 @@ describe('HtmlWebpackInlineSVGPlugin: post webpack resolve', function () {
 })
 
 describe('HtmlWebpackInlineSVGPlugin: allowFromUrl webpack resolve', function () {
-
+    
+    var mock = new MockAdapter(axios)
+    
     beforeAll(function (done) {
+        mock.onGet('https://badge.fury.io/js/html-webpack-inline-svg-plugin.svg').reply(200, '<svg class="mocked-svg"><text>mocked svg</text></svg>')
+        mock.onGet('https://notFound/typoInExtension/html-webpack-inline-svg-plugin-typoInNaming.svg').reply(404)
+        mock.onGet('http://errorLoading/someIconWhichDoesNotExist.svg').reply(500)
+        mock.onGet('http://timeoutLoading/someIconWhichDoesNotExist-timeout.svg').timeout();
 
         // clone the config
-
         const webpackTestConfig = Object.assign({}, webpackConfig.options, webpackAllowFromUrlConfig)
 
 
@@ -75,13 +83,15 @@ describe('HtmlWebpackInlineSVGPlugin: allowFromUrl webpack resolve', function ()
 
     })
 
+    afterEach(() => {
+        mock.restore();
+    })
 
-    // run all tests
 
-    jasmineTests.forEach((test) => {
+    // run all-images-from-url tests
 
+    jasmineAllowFromUrlTests.forEach((test) => {
         it(test.label, test.func)
-
     })
 
 })
