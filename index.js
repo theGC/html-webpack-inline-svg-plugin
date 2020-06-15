@@ -454,7 +454,7 @@ class HtmlWebpackInlineSVGPlugin {
      * @returns {Promise}
      *
      */
-    optimiseSvg ({ html, inlineImage, data, resolve }) {
+    optimizeSvg ({ html, inlineImage, data, resolve }) {
         const configObj = Object.assign(svgoDefaultConfig, this.userConfig)
 
         const config = {}
@@ -486,7 +486,7 @@ class HtmlWebpackInlineSVGPlugin {
 
     /**
      * append the inlineImages SVG data to the output HTML and remove the original img by
-     * loading the SVG data from the filesystem or from the network
+     * loading the SVG data from the filesystem or from an URL
      * @param {string} html
      * @param {Object} inlineImage - parse5 document
      * @returns {Promise}
@@ -525,13 +525,13 @@ class HtmlWebpackInlineSVGPlugin {
                             return
                         }
 
-                        this.optimiseSvg({ html, inlineImage, data, resolve })
+                        this.optimizeSvg({ html, inlineImage, data, resolve })
                     })
 
                     return
                 }
 
-                this.optimiseSvg({ html, inlineImage, data, resolve })
+                this.optimizeSvg({ html, inlineImage, data, resolve })
 
             })
 

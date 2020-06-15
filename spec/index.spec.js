@@ -51,7 +51,7 @@ describe('HtmlWebpackInlineSVGPlugin: post webpack resolve', function () {
 
 })
 
-describe('HtmlWebpackInlineSVGPlugin: useNetworkToLoadImages webpack resolve', function () {
+describe('HtmlWebpackInlineSVGPlugin: allowFromUrl webpack resolve', function () {
 
     beforeAll(function (done) {
 
