@@ -30,6 +30,10 @@ module.exports = [
 
                 expect($('img#timeout-loading').length).toBe(1)
 
+                expect($('img#replace-me-too').length).toBe(0)
+
+                expect($('svg#replace-me-too').length).toBe(1)
+
                 expect($('img#not-an-svg').length).toBe(1)
 
                 expect($('div#do-not-decode').length).toBe(1)

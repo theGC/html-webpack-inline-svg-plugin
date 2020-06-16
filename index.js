@@ -266,7 +266,14 @@ class HtmlWebpackInlineSVGPlugin {
             // process the imageNodes
 
             this.updateHTML(html, inlineImages)
-                .then((html) => resolve(html))
+                .then((html) => {
+                    if (!this.allowFromUrl) {
+                        resolve(html)
+                    }
+
+                    const newHtml = html.replace(/failed /gi, '')
+                    resolve(newHtml)
+                })
                 .catch((err) => {
 
                     console.log(chalk.underline.red('processImages hit error'))
@@ -408,12 +415,20 @@ class HtmlWebpackInlineSVGPlugin {
      */
     isNodeValidInlineImage (node) {
 
-        return !!(
-            node.nodeName === 'img'
-            && ((this.inlineAll && _.filter(node.attrs, { name: 'inline-exclude' }).length === 0)
-                || _.filter(node.attrs, { name: 'inline' }).length)
-            && this.getImagesSrc(node))
+        const isInlineAllAndDoesNotHaveInlineExclude = (
+            this.inlineAll &&
+            _.filter(node.attrs, { name: 'inline-exclude' }).length === 0
+        )
+        const isInlineNotMarkedAsFailed = (
+            _.filter(node.attrs, { name: 'inline' }).length &&
+            !_.filter(node.attrs, { name: 'failed' }).length
+        )
 
+        return !!(
+            node.nodeName === 'img' &&
+            (isInlineAllAndDoesNotHaveInlineExclude || isInlineNotMarkedAsFailed) &&
+            this.getImagesSrc(node)
+        )
 
     }
 
@@ -427,7 +442,6 @@ class HtmlWebpackInlineSVGPlugin {
     getImagesSrc (inlineImage) {
 
         const svgSrcObject = _.find(inlineImage.attrs, { name: 'src' })
-
 
         // image does not have a src attribute
 
@@ -493,36 +507,45 @@ class HtmlWebpackInlineSVGPlugin {
      *
      */
     processOutputHtml (html, inlineImage) {
+
         return new Promise((resolve, reject) => {
 
             const svgSrc = this.getImagesSrc(inlineImage)
+
 
             // if the image isn't valid resolve
             if (!svgSrc) return resolve(html)
 
             // read in the svg
             fs.readFile(path.resolve(this.outputPath, svgSrc), 'utf8', (err, data) => {
-                if (err) {
-                    // loading from the filesystem failed
-                    if (!this.allowFromUrl) {
-                        return reject(err)
-                    }
-
-                    axios.get(svgSrc)
-                        .then(({ status, data }) => {
-                            if (!status === 200) {
-                                resolve(html)
-                                return
-                            }
-
-                            this.optimizeSvg({ html, inlineImage, svgSrc, data, resolve })
-                        })
-                        .catch(() => resolve(html))
-
+                if (!err) {
+                    this.optimizeSvg({ html, inlineImage, data, resolve })
                     return
                 }
 
-                this.optimizeSvg({ html, inlineImage, data, resolve })
+                // loading from the filesystem failed
+                if (!this.allowFromUrl) {
+                    reject(err)
+                    return
+                }
+
+                axios.get(svgSrc)
+                    .then(({ status, data }) => {
+                        if (status !== 200) {
+                            new Error(data);
+                        }
+
+                        this.optimizeSvg({ html, inlineImage, svgSrc, data, resolve })
+                    })
+                    .catch(() =>  {
+                        const start = inlineImage.sourceCodeLocation.startOffset
+
+                        // Add the failed attribute so in next iteration this image gets filtered
+                        const htmlWithFailedImage = html.substring(0, start) + '<img failed ' + html.substring((start + 5))
+                        
+                        resolve(htmlWithFailedImage)
+                    })
+
 
             })
 
