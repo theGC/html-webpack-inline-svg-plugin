@@ -266,14 +266,7 @@ class HtmlWebpackInlineSVGPlugin {
             // process the imageNodes
 
             this.updateHTML(html, inlineImages)
-                .then((html) => {
-                    if (!this.allowFromUrl) {
-                        resolve(html)
-                    }
-
-                    const newHtml = html.replace(/failed /gi, '')
-                    resolve(newHtml)
-                })
+                .then((html) => resolve(html))
                 .catch((err) => {
 
                     console.log(chalk.underline.red('processImages hit error'))
@@ -415,19 +408,11 @@ class HtmlWebpackInlineSVGPlugin {
      */
     isNodeValidInlineImage (node) {
 
-        const isInlineAllAndDoesNotHaveInlineExclude = (
-            this.inlineAll && _.filter(node.attrs, { name: 'inline-exclude' }).length === 0
-        )
-        const isInlineNotMarkedAsFailed = (
-            _.filter(node.attrs, { name: 'inline' }).length &&
-            _.filter(node.attrs, { name: 'failed' }).length === 0
-        )
-
         return !!(
-            node.nodeName === 'img' &&
-            (isInlineAllAndDoesNotHaveInlineExclude || isInlineNotMarkedAsFailed) &&
-            this.getImagesSrc(node)
-        )
+            node.nodeName === 'img'
+            && ((this.inlineAll && _.filter(node.attrs, { name: 'inline-exclude' }).length === 0)
+                || _.filter(node.attrs, { name: 'inline' }).length)
+            && this.getImagesSrc(node))
 
     }
 
