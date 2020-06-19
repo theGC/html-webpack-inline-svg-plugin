@@ -529,7 +529,12 @@ class HtmlWebpackInlineSVGPlugin {
                 }
 
                 axios.get(svgSrc)
-                    .then(({ data }) => this.optimizeSvg({ html, inlineImage, svgSrc, data, resolve }))
+                    .then(({ data, status }) => {
+                        if (status !== 200) {
+                            throw new Error(`Error when retrieving image from URL: ${status} status`)
+                        }
+                        this.optimizeSvg({ html, inlineImage, svgSrc, data, resolve })
+                    })
                     .catch((err) => reject(err))
 
 
