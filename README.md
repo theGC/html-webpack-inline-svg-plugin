@@ -124,6 +124,9 @@ If an alias was in place for the images directory, i.e.
 ```
 Then the svg can be inlined with: `<img inline src="~img/icons.svg">`. This method would require the use of **loaders** on your templates as shown above in point 2.
 
+#### Incorrect file paths or URLs
+If for any reason the path to a local SVG file is incorrect, or the file fails to be read, or an image retrieved with an URL fails to download, the webpack build process will fail with an error, like `ENOENT`.
+
 #### Duplicated attributes
 All the attributes of a `<img/>` element excepting `src` and `inline` will be copied to the inlined `<svg/>` element. Attributes like `id` or `class` will be copied to the resulting root of the `<svg/>` element and if the original SVG file already had these attributes they will be duplicated (and not replaced) on the resulting `<svg/>` element, though the attributes coming from the `<img/>` will appear first and [any subsequent duplicated attribute from the original SVG will be ignored by the browser](https://stackoverflow.com/questions/26341507/can-an-html-element-have-the-same-attribute-twice).
 
@@ -185,7 +188,15 @@ The plugin accepts three options:
    </div>
    ```
 
-- `svgoConfig`: to configure SVGO (module used to optimise your SVGs), add an `svgoConfig` object to your `html-webpack-plugin` config:
+- `allowFromUrl`: defaults to `false`. It allows to use SVG images coming from an URL online in addition to local files. For example:
+
+    ```html
+   <div>
+       <img inline src="https://badge.fury.io/js/html-webpack-inline-svg-plugin.svg"> <!-- it will be inlined from the online SVG -->
+   </div>
+   ```
+
+- `svgoConfig`: defaults to `undefinded`. to configure SVGO (module used to optimise your SVGs), add an `svgoConfig` object to your `html-webpack-plugin` config:
 
    ```javascript
    plugins: [

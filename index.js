@@ -8,6 +8,7 @@ const fs = require('fs')
 const SVGO = require('svgo')
 const svgoDefaultConfig = require(path.resolve(__dirname, 'svgo-config.js'))
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const axios = require('axios')
 
 
 /**
@@ -20,6 +21,7 @@ class HtmlWebpackInlineSVGPlugin {
 
         this.runPreEmit = _.get(options, 'runPreEmit', false)
         this.inlineAll = _.get(options, 'inlineAll', false)
+        this.allowFromUrl = _.get(options, 'allowFromUrl', false)
         this.userConfig = ''
         this.outputPath = ''
 
@@ -412,7 +414,6 @@ class HtmlWebpackInlineSVGPlugin {
                 || _.filter(node.attrs, { name: 'inline' }).length)
             && this.getImagesSrc(node))
 
-
     }
 
 
@@ -425,7 +426,6 @@ class HtmlWebpackInlineSVGPlugin {
     getImagesSrc (inlineImage) {
 
         const svgSrcObject = _.find(inlineImage.attrs, { name: 'src' })
-
 
         // image does not have a src attribute
 
@@ -443,9 +443,48 @@ class HtmlWebpackInlineSVGPlugin {
 
     }
 
-
     /**
      * append the inlineImages SVG data to the output HTML and remove the original img
+     * @param {Object{}} html
+     * @param {Object{}} inlineImage - parse5 document
+     * @param {Object{}} data - SVG data
+     * @param {Object{}} resolve - Consumer's Promise resolve hook
+     * @returns {Promise}
+     *
+     */
+    optimizeSvg ({ html, inlineImage, data, resolve }) {
+        const configObj = Object.assign(svgoDefaultConfig, this.userConfig)
+
+        const config = {}
+
+
+        // pass all objects to the config.plugins array
+
+        config.plugins = _.map(configObj, (value, key) => ({ [key]: value }));
+
+
+        // create a new instance of SVGO
+        // passing it the merged config, to optimize the svg
+
+        const svgo = new SVGO(config)
+
+        svgo.optimize(data)
+            .then((result) => {
+
+                const optimisedSVG = result.data
+
+                html = this.replaceImageWithSVG(html, inlineImage, optimisedSVG)
+
+                resolve(html)
+
+            })
+            .catch((err) => console.log(chalk.red(err)))
+    }
+
+
+    /**
+     * append the inlineImages SVG data to the output HTML and remove the original img by
+     * loading the SVG data from the filesystem or from an URL
      * @param {string} html
      * @param {Object} inlineImage - parse5 document
      * @returns {Promise}
@@ -459,42 +498,30 @@ class HtmlWebpackInlineSVGPlugin {
 
 
             // if the image isn't valid resolve
-
             if (!svgSrc) return resolve(html)
 
-
             // read in the svg
-
             fs.readFile(path.resolve(this.outputPath, svgSrc), 'utf8', (err, data) => {
+                if (!err) {
+                    this.optimizeSvg({ html, inlineImage, data, resolve })
+                    return
+                }
 
-                if (err) reject(err)
+                // loading from the filesystem failed
+                if (!this.allowFromUrl) {
+                    reject(err)
+                    return
+                }
 
-                const configObj = Object.assign(svgoDefaultConfig, this.userConfig)
-
-                const config = {}
-
-
-                // pass all objects to the config.plugins array
-
-                config.plugins = _.map(configObj, (value, key) => ({ [key]: value }));
-
-
-                // create a new instance of SVGO
-                // passing it the merged config, to optimize the svg
-
-                const svgo = new SVGO(config)
-
-                svgo.optimize(data)
-                    .then((result) => {
-
-                        const optimisedSVG = result.data
-
-                        html = this.replaceImageWithSVG(html, inlineImage, optimisedSVG)
-
-                        resolve(html)
-
+                axios.get(svgSrc)
+                    .then(({ data, status }) => {
+                        if (status !== 200) {
+                            throw new Error(`Error when retrieving image from URL: ${status} status`)
+                        }
+                        this.optimizeSvg({ html, inlineImage, svgSrc, data, resolve })
                     })
-                    .catch((err) => console.log(chalk.red(err)))
+                    .catch((err) => reject(err))
+
 
             })
 
@@ -504,7 +531,7 @@ class HtmlWebpackInlineSVGPlugin {
 
 
     /**
-     * replace the img with the optimised SVG
+     * replace the img with the optimized SVG
      * @param {string} html
      * @param {Object} inlineImage - parse5 document
      * @param {Object} svg

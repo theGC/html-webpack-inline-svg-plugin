@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Allow From URL SVG Tests index</title>
+  <style>
+    .icon {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      stroke-width: 0;
+      stroke: currentColor;
+      fill: currentColor;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div>
+    <p>should not touch this: <img width="20px" height="auto" class="leave-me" src="~img/face.svg"></p>
+    <p>
+      <span>if below SVG is inlined correctly we can reference its content:</span>
+      <svg class="icon mood-good">
+        <use xlink:href="#icon-mood-good"></use>
+      </svg>
+      <img id="find-and-replace-me" src="images/face.svg">
+    </p>
+  </div>
+
+  <img id="replace-me" inline src="https://badge.fury.io/js/html-webpack-inline-svg-plugin.svg" />
+
+  <!-- These three images, if uncommented, will make fail the webpack build process, as expected -->
+
+  <!-- <img id="not-found" inline src="https://notFound/typoInExtension/html-webpack-inline-svg-plugin-typoInNaming.svg" />
+
+  <img id="error-loading" inline src="https://errorLoading/someIconWhichDoesNotExist.svg" />
+
+  <img id="timeout-loading" inline src="https://timeoutLoading/someIconWhichDoesNotExist-timeout.svg" /> -->
+
+  <img id="replace-me-too" inline src="https://badge.fury.io/js/html-webpack-inline-svg-plugin.svg" />
+
+  <img id="not-an-svg" inline src="images/not-an-svg.png" />
+
+  <div id="do-not-decode"><?= $foo->bar; ?></div>
+
+</body>
+
+</html>
+
+</body>
+
+</html>
