@@ -24,12 +24,6 @@ module.exports = [
 
                 expect($('svg#replace-me').length).toBe(1)
 
-                expect($('img#not-found').length).toBe(1)
-
-                expect($('img#error-loading').length).toBe(1)
-
-                expect($('img#timeout-loading').length).toBe(1)
-
                 expect($('img#replace-me-too').length).toBe(0)
 
                 expect($('svg#replace-me-too').length).toBe(1)

@@ -416,12 +416,11 @@ class HtmlWebpackInlineSVGPlugin {
     isNodeValidInlineImage (node) {
 
         const isInlineAllAndDoesNotHaveInlineExclude = (
-            this.inlineAll &&
-            _.filter(node.attrs, { name: 'inline-exclude' }).length === 0
+            this.inlineAll && _.filter(node.attrs, { name: 'inline-exclude' }).length === 0
         )
         const isInlineNotMarkedAsFailed = (
             _.filter(node.attrs, { name: 'inline' }).length &&
-            !_.filter(node.attrs, { name: 'failed' }).length
+            _.filter(node.attrs, { name: 'failed' }).length === 0
         )
 
         return !!(
@@ -530,21 +529,8 @@ class HtmlWebpackInlineSVGPlugin {
                 }
 
                 axios.get(svgSrc)
-                    .then(({ status, data }) => {
-                        if (status !== 200) {
-                            new Error(data);
-                        }
-
-                        this.optimizeSvg({ html, inlineImage, svgSrc, data, resolve })
-                    })
-                    .catch(() =>  {
-                        const start = inlineImage.sourceCodeLocation.startOffset
-
-                        // Add the failed attribute so in next iteration this image gets filtered
-                        const htmlWithFailedImage = html.substring(0, start) + '<img failed ' + html.substring((start + 5))
-                        
-                        resolve(htmlWithFailedImage)
-                    })
+                    .then(({ data }) => this.optimizeSvg({ html, inlineImage, svgSrc, data, resolve }))
+                    .catch((err) => reject(err))
 
 
             })
@@ -555,7 +541,7 @@ class HtmlWebpackInlineSVGPlugin {
 
 
     /**
-     * replace the img with the optimised SVG
+     * replace the img with the optimized SVG
      * @param {string} html
      * @param {Object} inlineImage - parse5 document
      * @param {Object} svg

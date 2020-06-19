@@ -60,9 +60,11 @@ describe('HtmlWebpackInlineSVGPlugin: allowFromUrl webpack resolve', function ()
     
     beforeAll(function (done) {
         mock.onGet('https://badge.fury.io/js/html-webpack-inline-svg-plugin.svg').reply(200, '<svg class="mocked-svg"><text>mocked svg</text></svg>')
-        mock.onGet('https://notFound/typoInExtension/html-webpack-inline-svg-plugin-typoInNaming.svg').reply(404)
-        mock.onGet('http://errorLoading/someIconWhichDoesNotExist.svg').reply(500)
-        mock.onGet('http://timeoutLoading/someIconWhichDoesNotExist-timeout.svg').timeout();
+
+        // Like when the SVG file is retrieved locally, the webpack build process fails as well if the URL provided doesn't download for some reason
+        // mock.onGet('https://notFound/typoInExtension/html-webpack-inline-svg-plugin-typoInNaming.svg').reply(404)
+        // mock.onGet('http://errorLoading/someIconWhichDoesNotExist.svg').reply(500)
+        // mock.onGet('http://timeoutLoading/someIconWhichDoesNotExist-timeout.svg').timeout();
 
         // clone the config
         const webpackTestConfig = Object.assign({}, webpackConfig.options, webpackAllowFromUrlConfig)
