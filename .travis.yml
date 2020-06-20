@@ -12,7 +12,6 @@ notifications:
   email: false
 deploy:
   provider: npm
-  email: guy@thebigsurf.co.uk
   api_key:
     secure: IEwmUcnZAnPxuEk7hro8/cElZ/kXK6b9ubqJwdtbd/RSndeyR/uY5fJxuI4EYtTK+0BKdux9TUMfjkv1ex8fyIhBbRZ8dS3zRLRH+94ZP+8Jm1h9LSiPGfRnzKOQ4YaIloXRSzZJdeHgwHKC6TFrqjgW9B4Yl4NQA9Wrz4TDmU7qEOvKAUp/6eAhd3UZL3L6x4zFgwbt3nv3LJYiO+MX2eDtFutSHzJTrRNFdndPxChaev4W81E0OHo9HYngvoSbsWm217IpBL+9H69+NiLWrB87ttSqa0ujQKwsx6nkQ3cdoz+I8hl2GeSjiMAKOO2ZtWwUyIi9z49szLnWxIUO9tb0QknXBoCFTSh7Ky/ztxDcY5Syi3SGD1KGF8Pje6qc7KB4TXyQB5g2X65Lk6+d8AKJRJDGIz8YJPQQutUt7D5Mu+3TVvfCAsI3kO0/xJK7YDQGRZQ+wew6CHDXncMZR4HM0PEIzUfOEE11Nd6FX5xVQR3x/DlutKf/MuF5ovV7liXZQR6AosCTV2KqgFCz32VMRV8XGrYoCvCD/+Eosg2oJJjssc34STub5u4eZIfLeQH9Tvkly4IZedAv+UBmGIU2EDayN/g67J1uonSR3xf+qwbW/0+6kPyZ2ZeBnH499I8ri6OdlbvV2pQbvShQqBp2yyCJxv8oVn7IyQyW9sM=
   on:
