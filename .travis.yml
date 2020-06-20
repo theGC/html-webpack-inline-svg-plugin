@@ -12,11 +12,10 @@ notifications:
   email: false
 deploy:
   provider: npm
-  edge: true
-  registry: https://www.npmjs.com/package/html-webpack-inline-svg-plugin
-  access: public
-  api_token:
-    secure: DJRGKFl/fMFMpGd6P/2LkwWie0rS9brgkAj5GdeL6L9I7TtBlrBwg3xM/kjWRuUri8mVoVqd7ztuXyH4YVhkpPe254lHACM6w0UwZstqIy25WDNPh6ay6i7Yww06iDdzb2L7yFvxt2QF3J3C5iBVTVkGdm/i+G4cJsvYaxTM7d/rBVMVsEPGL9660YZoArqLiNKHtM+iqHnzfNQa1PtgaBNx92v6oRmHrs7HYfPSM9OdNpuYX2k1d/NbuSrtJh68nAxp6pKbhNDkaIR1bIxDwiBj3em2YEIlepgSC0mxT5gcknTiEvIfkHPjVG+Qv0DYF6Hsqym/NjN8WBA+ILLOzczGoJABRS4M5Dbr9vJMdDc8cayfXB7NOKVjuf9ChxkGkd0Ay3f+ncJIphBqFYzXPpzp+wRgEcux5f30ModekS54mvTUUUgrgJRurkrIFo2sd7rsbzG6jMnnHFl9X2T1rJeX5rue9R4tILKDwk5HZPq26XuxOZkfBhq5BoO9FSzrpjfytjzk1wcLBufZF3rNi0g5X0twR2rPZPJfuqHHJrfrmIH3GP/kKZCPS7IjH/oxxlqTnQ9YaAACaFFXK5+knGhTBIe4vhyyQ/8+m5+wSRsB7WRswKoidvT5Sz1/PeEZSUibtZuSo0omcvjEUkkt5RP/uPwQr9Ctn7Ze4+68HFQ=
+  email: guy@thebigsurf.co.uk
+  api_key:
+    secure: IEwmUcnZAnPxuEk7hro8/cElZ/kXK6b9ubqJwdtbd/RSndeyR/uY5fJxuI4EYtTK+0BKdux9TUMfjkv1ex8fyIhBbRZ8dS3zRLRH+94ZP+8Jm1h9LSiPGfRnzKOQ4YaIloXRSzZJdeHgwHKC6TFrqjgW9B4Yl4NQA9Wrz4TDmU7qEOvKAUp/6eAhd3UZL3L6x4zFgwbt3nv3LJYiO+MX2eDtFutSHzJTrRNFdndPxChaev4W81E0OHo9HYngvoSbsWm217IpBL+9H69+NiLWrB87ttSqa0ujQKwsx6nkQ3cdoz+I8hl2GeSjiMAKOO2ZtWwUyIi9z49szLnWxIUO9tb0QknXBoCFTSh7Ky/ztxDcY5Syi3SGD1KGF8Pje6qc7KB4TXyQB5g2X65Lk6+d8AKJRJDGIz8YJPQQutUt7D5Mu+3TVvfCAsI3kO0/xJK7YDQGRZQ+wew6CHDXncMZR4HM0PEIzUfOEE11Nd6FX5xVQR3x/DlutKf/MuF5ovV7liXZQR6AosCTV2KqgFCz32VMRV8XGrYoCvCD/+Eosg2oJJjssc34STub5u4eZIfLeQH9Tvkly4IZedAv+UBmGIU2EDayN/g67J1uonSR3xf+qwbW/0+6kPyZ2ZeBnH499I8ri6OdlbvV2pQbvShQqBp2yyCJxv8oVn7IyQyW9sM=
   on:
     tags: true
-  cleanup: true
+    repo: theGC/html-webpack-inline-svg-plugin
+  skip_cleanup: 'true'
