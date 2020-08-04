@@ -190,7 +190,7 @@ class HtmlWebpackInlineSVGPlugin {
     getUserConfig (htmlPluginData) {
 
         if (_.get(htmlPluginData, 'plugin.options.svgoConfig', false)) {
-            throw new Error('html-webpack-inline-svg-plugin: on your webpack configuration file svgoConfig option must now go inside HtmlWebpackInlineSVGPlugin({}) instead of HtmlWebpackPlugin({}): https://github.com/theGC/html-webpack-inline-svg-plugin#config')
+            throw new Error('html-webpack-inline-svg-plugin: on your webpack configuration file svgoConfig option must now go inside HtmlWebpackInlineSVGPlugin({}) instead of HtmlWebpackPlugin({}). Also note the SVGO configuration format has changed and the one you had will need tweaking: https://github.com/theGC/html-webpack-inline-svg-plugin#config')
         }
 
     }
