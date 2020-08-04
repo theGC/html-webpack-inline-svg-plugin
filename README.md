@@ -219,7 +219,7 @@ The plugin accepts the below options:
    </div>
    ```
 
-- `svgoConfig`: defaults to `[]`. [SVGO](https://github.com/svg/svgo) is used to optimise the SVGs inlined. You can configure SVGO by setting this `svgoConfig` `Array` with the [SVGO plugins](https://github.com/svg/svgo#what-it-can-do) you need in the same way it's done in this [SVGO official Node.js example](https://github.com/svg/svgo/blob/master/examples/test.js).
+- `svgoConfig`: defaults to `[]`. [SVGO](https://github.com/svg/svgo) is used to optimise the SVGs inlined. You can configure SVGO by setting this `svgoConfig` array with the [SVGO plugins](https://github.com/svg/svgo#what-it-can-do) you need in the same way it's done in this [SVGO official Node.js example](https://github.com/svg/svgo/blob/master/examples/test.js).
 
    Note `svgoConfig` is an array of `Object`s that will be assigned to the `.plugins` SVGO config variable by `html-webpack-inline-svg-plugin`. You don't need to pass an `Object` with a `plugins` property assigned an array of SVGO plugins, just pass the array:
 
