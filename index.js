@@ -6,7 +6,6 @@ const parse5 = require('parse5')
 const _ = require('lodash')
 const fs = require('fs')
 const SVGO = require('svgo')
-const svgoDefaultConfig = require(path.resolve(__dirname, 'svgo-config.js'))
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const axios = require('axios')
 
@@ -22,7 +21,7 @@ class HtmlWebpackInlineSVGPlugin {
         this.runPreEmit = _.get(options, 'runPreEmit', false)
         this.inlineAll = _.get(options, 'inlineAll', false)
         this.allowFromUrl = _.get(options, 'allowFromUrl', false)
-        this.userConfig = ''
+        this.svgoConfig = _.get(options, 'svgoConfig', [])
         this.outputPath = ''
 
         this.files = []
@@ -181,18 +180,18 @@ class HtmlWebpackInlineSVGPlugin {
 
 
     /**
+     * DEPRECATED: svgoConfig option must now go inside HtmlWebpackInlineSVGPlugin({}) instead of HtmlWebpackPlugin({}).
+     * This method will be removed in future releases.
+     * 
      * get the users custom config
      * @param {Object} htmlPluginData
      *
      */
     getUserConfig (htmlPluginData) {
 
-        this.userConfig =
-            htmlPluginData &&
-            htmlPluginData.plugin.options &&
-            _.isObject(htmlPluginData.plugin.options.svgoConfig) ?
-            htmlPluginData.plugin.options.svgoConfig :
-            {}
+        if (_.get(htmlPluginData, 'plugin.options.svgoConfig', false)) {
+            throw new Error('html-webpack-inline-svg-plugin: on your webpack configuration file svgoConfig option must now go inside HtmlWebpackInlineSVGPlugin({}) instead of HtmlWebpackPlugin({}). Also note the SVGO configuration format has changed and the one you had will need tweaking: https://github.com/theGC/html-webpack-inline-svg-plugin#config')
+        }
 
     }
 
@@ -453,20 +452,9 @@ class HtmlWebpackInlineSVGPlugin {
      *
      */
     optimizeSvg ({ html, inlineImage, data, resolve }) {
-        const configObj = Object.assign(svgoDefaultConfig, this.userConfig)
-
-        const config = {}
-
-
-        // pass all objects to the config.plugins array
-
-        config.plugins = _.map(configObj, (value, key) => ({ [key]: value }));
-
-
-        // create a new instance of SVGO
-        // passing it the merged config, to optimize the svg
-
-        const svgo = new SVGO(config)
+        const svgo = new SVGO({
+          plugins: this.getSvgoConfig()
+        })
 
         svgo.optimize(data)
             .then((result) => {
@@ -481,6 +469,23 @@ class HtmlWebpackInlineSVGPlugin {
             .catch((err) => console.log(chalk.red(err)))
     }
 
+    /**
+     * Returns an array with he default SVGO configuration merged with the configuration provided by the user.
+     * The configuration provided by the user overrides the default one.
+     * @returns {Array}
+     *
+     */
+    getSvgoConfig() {
+        const svgoDefaultConfig = [
+            { cleanupIDs: false }
+        ]
+        
+        const svgoDefaultConfigFiltered = svgoDefaultConfig.filter(di =>
+            !this.svgoConfig.some(i => Object.keys(di)[0] === Object.keys(i)[0])
+        )
+
+        return svgoDefaultConfigFiltered.concat(this.svgoConfig)
+    }
 
     /**
      * append the inlineImages SVG data to the output HTML and remove the original img by

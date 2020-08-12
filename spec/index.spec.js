@@ -8,9 +8,11 @@ var webpackPostEmitConfig = require('./webpack.post-emit.config')
 var webpackPreEmitConfig = require('./webpack.pre-emit.config')
 var webpackInlineAllConfig = require('./webpack.inline-all.config')
 var webpackAllowFromUrlConfig = require('./webpack.allow-from-url.config')
+var webpackSvgoConfig = require('./webpack.svgo.config')
 var jasmineTests = require('./jasmine.tests')
 var jasmineInlineAllTests = require('./jasmine-inline-all.tests')
 var jasmineAllowFromUrlTests = require('./jasmine-allow-from-url.tests')
+var jasmineSvgoTests = require('./jasmine-svgo.tests')
 var rm = require('rimraf')
 
 rm(webpackConfig.outputDir, (err) => {
@@ -165,6 +167,39 @@ describe('HtmlWebpackInlineSVGPlugin: inlineAll resolve', function () {
     // run all-images tests
 
     jasmineInlineAllTests.forEach((test) => {
+
+        it(test.label, test.func)
+
+    })
+
+})
+
+
+describe('HtmlWebpackInlineSVGPlugin: custom SVGO config resolve.', function () {
+
+    beforeAll(function (done) {
+
+        // clone the config
+
+        const webpackTestConfig = Object.assign({}, webpackConfig.options, webpackSvgoConfig)
+
+
+        // run webpack
+
+        webpack(webpackTestConfig, (err) => {
+
+            expect(err).toBeFalsy()
+
+            // callback is fired before all files hve been written to disk
+            // due to use of after-emit - place a timeout to try and avoid the issue
+
+            setTimeout(done, 2000)
+
+        })
+
+    })
+
+    jasmineSvgoTests.forEach((test) => {
 
         it(test.label, test.func)
 

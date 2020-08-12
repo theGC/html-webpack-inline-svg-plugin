@@ -13,8 +13,8 @@ Converts .svg files into inlined `<svg>` tags within the output html of template
 1. [Usage](#usage)
    1. [Getting To Your SVGs](#getting-to-your-svgs)
    1. [Sample Project Structure](#sample-project-structure)
-   1. [Default Config (not setting `runPreEmit` option)](#default-config-not-setting-runpreemit-option)
-   1. [Incorrect File Paths And URLs](#incorrect-file-paths-and-urls)
+   1. [Default Config](#default-config)
+   1. [Incorrect File Paths Or URLs](#incorrect-file-paths-or-urls)
    1. [Duplicated Attributes](#duplicated-attributes)
 1. [Config](#config)
 1. [Versions](#versions)
@@ -28,11 +28,11 @@ By inlining SVGs you can combine them with techniques such as: [Icon System with
 
 As of version 1.0.0 **by default** this plugin processes SVG files after all template and image files have been written to their corresponding output directory. This allows it to work alongside loaders, after webpack resolves all file locations.
 
-> Please note: to use **aliases** you will need to install loaders to resolve your svg paths and parse the templates html. More info is provided below: [Getting To Your SVGs](#getting-to-your-svgs).
+> Please note: to use **aliases** you will need to install loaders to resolve your svg paths and parse the templates html. Check [Getting To Your SVGs](#getting-to-your-svgs) section for more info.
 
-**As of version 1.1.0** the plugin can also be run prior to the output of your templates. This allows you to reference image files from the root of your project which can help with getting to certain files, i.e. within your `node_modules` directory. More info is provided below: [Setting runPreEmit option](#setting-runpreemit-option).
+**As of version 1.1.0** the plugin can also be run prior to the output of your templates. This allows you to reference image files from the root of your project which can help with getting to certain files, i.e. within your `node_modules` directory. More info is provided below: [Setting `runPreEmit` option](#setting-runpreemit-option).
 
-The plugin relies on [svgo](https://github.com/svg/svgo) to optimise SVGs. You can configure it's settings, check [Config](#config) for more details.
+The plugin relies on [SVGO](https://github.com/svg/svgo) to optimise SVGs. Check [Config](#config) for more details.
 
 
 ## Features
@@ -48,13 +48,15 @@ The plugin relies on [svgo](https://github.com/svg/svgo) to optimise SVGs. You c
 ## Installation
 
 Install the plugin with npm:
+
 ```shell
 $ npm install --save-dev html-webpack-inline-svg-plugin
 ```
 
 or [Yarn](https://yarnpkg.com/):
+
 ```shell
-$ yarn add html-webpack-inline-svg-plugin --dev
+$ yarn add --dev html-webpack-inline-svg-plugin
 ```
 
 ## Usage
@@ -74,7 +76,7 @@ plugins: [
 ]
 ```
 
-Add `img` tags with `inline` attribute and `.svg` file as src to your template/s that the html-webpack-plugin is processing (the default is `index.html`).
+Add `img` tags with `inline` attribute and `.svg` file as `src` to your template/s that the html-webpack-plugin is processing (the default is `index.html`).
 
 ```html
 <!-- Works: below img tag will be removed and replaced by the content of the svg in its src -->
@@ -97,7 +99,7 @@ There are three ways of working with your `<img>` **src** attributes and this pl
 
 1. **Alternatively use loaders** such as [html-loader](https://github.com/webpack-contrib/html-loader) to parse the html templates, and [file-loader](https://github.com/webpack-contrib/file-loader) or something similar, to resolve the paths of your `img` tags `src` attributes. As the plugin works after webpack has emitted all its assets and *html-webpack-plugin* has output your templates, it will read the SVGs that webpack places in your output directory, and replace any **inlined img tags** with this content.
 
-1. **Set the `runPreEmit` flag** and reference files relative to your `package.json` file. This feature is only available with version >= 1.1.0. More info is provided below: [Setting runPreEmit option](#setting-runpreemit-option).
+1. **Set the `runPreEmit` flag** and reference files relative to your `package.json` file. This feature is only available with version >= 1.1.0. Check [Config](#config) and the `runPreEmit` option for more info.
 
 
 ### Sample Project Structure
@@ -114,22 +116,28 @@ my-project
         └── foo.svg
 ```
 
-### Default Config (not setting `runPreEmit` option)
+### Default Config
+
 With the above structure inlining `icons.svg` would look like:
+
 ```html
 <img inline src="images/icons.svg">
 ```
 
 If an alias was in place for the images directory, i.e.
+
 ```javascript
 'img': path.join(__dirname, 'src', 'images')
 ```
+
 Then the svg can be inlined with: `<img inline src="~img/icons.svg">`. This method would require the use of **loaders** on your templates as shown above in point 2.
 
-### Incorrect file paths and URLs
+### Incorrect file paths or URLs
+
 If for any reason the path to a local SVG file is incorrect, or the file fails to be read, or an image retrieved with an URL fails to download, the webpack build process will fail with an error, like `ENOENT`.
 
 ### Duplicated attributes
+
 All the attributes of a `<img/>` element excepting `src` and `inline` will be copied to the inlined `<svg/>` element. Attributes like `id` or `class` will be copied to the resulting root of the `<svg/>` element and if the original SVG file already had these attributes they will be duplicated (and not replaced) on the resulting `<svg/>` element, though the attributes coming from the `<img/>` will appear first and [any subsequent duplicated attribute from the original SVG will be ignored by the browser](https://stackoverflow.com/questions/26341507/can-an-html-element-have-the-same-attribute-twice).
 
 For example:
@@ -146,7 +154,7 @@ will result in:
 <svg id="myImageIMG" class="square" id="myImageSVG">...</svg>
 ```
 
-The broswer will use `id=""myImageIMG"` and not `id="myImageSVG"`. It's however a better approach if you avoid having any duplicated attribute at all and only putting the required ones on the `<img>` element.
+The broswer will use `id="myImageIMG"` and not `id="myImageSVG"`. It's however a better approach if you avoid having any duplicated attribute at all and only putting the required ones on the `<img>` element.
 
 
 ## Config
@@ -211,21 +219,29 @@ The plugin accepts the below options:
    </div>
    ```
 
-- `svgoConfig`: defaults to `undefinded`. to configure SVGO (module used to optimise your SVGs), add an `svgoConfig` object to your `html-webpack-plugin` config:
+- `svgoConfig`: defaults to `[]`. [SVGO](https://github.com/svg/svgo) is used to optimise the SVGs inlined. You can configure SVGO by setting this `svgoConfig` array with the [SVGO plugins](https://github.com/svg/svgo#what-it-can-do) you need in the same way it's done in this [SVGO official Node.js example](https://github.com/svg/svgo/blob/master/examples/test.js).
+
+   Note `svgoConfig` is an array of `Object`s that will be assigned to the `.plugins` SVGO config variable by `html-webpack-inline-svg-plugin`. You don't need to pass an `Object` with a `plugins` property assigned an array of SVGO plugins, just pass the array:
 
    ```javascript
    plugins: [
-       new HtmlWebpackPlugin({
-           svgoConfig: {
-               removeTitle: false,
-               removeViewBox: true,
-           },
-       }),
-       new HtmlWebpackInlineSVGPlugin()
+       new HtmlWebpackPlugin(),
+       new HtmlWebpackInlineSVGPlugin({
+           svgoConfig: [
+               {
+                   removeViewBox: false
+               },
+               {
+                   inlineStyles: {
+                       onlyMatchedOnce: false
+                   }
+               }
+           ]
+       })
    ]
    ```
 
-   For a full list of the SVGO config (default) params we are using check out: [svgo-config.js](svgo-config.js). The config you set is merged with our defaults, it does not replace it.
+   `html-webpack-inline-svg-plugin` modifies one SVGO default: `cleanupIDs`, from `true` to `false`, since IDs allow to reference individual symbols. You can still override this or any other SVGO plugin default configuration with this `svgoConfig` option.
 
 
 ## Versions
@@ -245,9 +261,9 @@ For webpack 3 and html-webpack-plugin v3 support use v1.3.0 of this package.
 
 ## Contribution
 
-You're free to contribute to this project by submitting issues and/or pull requests. This project is test-driven, so keep in mind that every change and new feature should be covered by tests.
+You're free to contribute to this project by submitting issues and/or pull requests. This project is test-driven, so keep in mind that every change and new feature must be covered by tests.
 
-I'm happy for someone to take over the project as I don't find myself using it anylonger due to changes in workflow. Therefore others are likely in a better position to support this project and roll out the right enhancements.
+I'm happy for someone to take over the project as I don't find myself using it any longer due to changes in workflow. Therefore others are likely to be in a better position to support this project and roll out the right enhancements.
 
 
 ## License
