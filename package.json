@@ -39,7 +39,7 @@
         "webpack": "^4.44.1"
     },
     "dependencies": {
-        "axios": "^0.19.2",
+        "axios": "^0.21.1",
         "chalk": "^4.1.0",
         "cheerio": "^1.0.0-rc.3",
         "lodash": "^4.17.19",
