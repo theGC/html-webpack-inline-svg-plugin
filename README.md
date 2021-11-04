@@ -1,9 +1,11 @@
-html-webpack-inline-svg-plugin
+`html-webpack-inline-svg-plugin`
 =
 
 [![npm version](https://badge.fury.io/js/html-webpack-inline-svg-plugin.svg)](https://badge.fury.io/js/html-webpack-inline-svg-plugin) [![Build status](https://travis-ci.org/theGC/html-webpack-inline-svg-plugin.svg)](https://travis-ci.org/theGC/html-webpack-inline-svg-plugin)
 
-Converts SVG files referenced by `<img>` elements into inlined `<svg>` elements within the output HTML of templates parsed by [`html-webpack-plugin`](https://github.com/jantimon/html-webpack-plugin).
+Converts SVG files referenced by `<img>` elements into inlined `<svg>` elements within the output HTML of templates used by [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin).
+
+`html-webpack-inline-svg-plugin` does not support yet webpack v5.
 
 ## Table of Contents
 
@@ -41,7 +43,7 @@ When SVGs files are inlined into HTML the embedded SVGs can be customised with C
 
 ## Installation
 
-Add and install the `html-webpack-inline-svg-plugin` dependency to `package.json` with npm:
+Add and install the `html-webpack-inline-svg-plugin` dependency to `package.json`. At this point you should already have installed in your project other required dependencies like [webpack](https://www.npmjs.com/package/webpack) and [html-webpack-plugin](https://www.npmjs.com/package/html-webpack-plugin):
 
 ```bash
 npm i -D html-webpack-inline-svg-plugin
@@ -79,6 +81,8 @@ my-project
 On your webpack config file add:
 
 ```js
+// webpack.config.js
+
 const HtmlWebpackInlineSVGPlugin = require('html-webpack-inline-svg-plugin');
 
 // ...
@@ -91,7 +95,7 @@ plugins: [
 ]
 ```
 
-Then, add `<img>` elements with the `inline` attribute to the templates that `html-webpack-plugin` will be processing. Check [Paths to SVG files](#paths-to-svg-files) to know what is the correct path to SVG files in `<img>` elements.
+Then, add `<img>` elements with the `inline` attribute to the templates that html-webpack-plugin will be processing. Check [Paths to SVG files](#paths-to-svg-files) to know what is the correct path to SVG files in `<img>` elements.
 
 ```html
 <!-- ✅ Inlined: SVG file relative to OUTPUT -->
@@ -131,7 +135,7 @@ If **loaders for the entry template are not used** SVG file paths must be relati
 ```
 You have to make sure SVG files have been moved to the output directory by some mean.
 
-In this way SVG files are inlined after all template and image files have been written to the [output directory](https://webpack.js.org/configuration/output/#outputpath), that is it, on `html-webpack-plugin`'s [`afterEmit`](https://github.com/jantimon/html-webpack-plugin#afteremit-hook) event.
+In this way SVG files are inlined after all template and image files have been written to the [output directory](https://webpack.js.org/configuration/output/#outputpath), that is it, on html-webpack-plugin's [`afterEmit`](https://github.com/jantimon/html-webpack-plugin#afteremit-hook) event.
 
 #### Relative to ROOT
 
@@ -146,13 +150,13 @@ If **loaders for the entry template are still not used**, the **[`runPreEmit`](#
 <img inline src="~a/bar.svg"> <!-- Will give an error because aliases are not supported without loaders -->
 ```
 
-In this way the plugin run prior to the output of templates, that is it, on `html-webpack-plugin`'s [`beforeEmit`](https://github.com/jantimon/html-webpack-plugin#beforeemit-hook) event. This allows to reference image files from the project root which can help with getting to certain files, like for example within the `node_modules` directory.
+In this way the plugin run prior to the output of templates, that is it, on html-webpack-plugin's [`beforeEmit`](https://github.com/jantimon/html-webpack-plugin#beforeemit-hook) event. This allows to reference image files from the project root which can help with getting to certain files, like for example within the `node_modules` directory.
 
 #### Relative to SOURCE
 
-If **loaders are used** SVG file paths in `<img>` elements must be relative to the **source entry** template (the [`template` config option](https://github.com/jantimon/html-webpack-plugin#options) in `html-webpack-plugin`).
+If **loaders are used** SVG file paths in `<img>` elements must be relative to the **source entry** template (the [`template` config option](https://github.com/jantimon/html-webpack-plugin#options) in html-webpack-plugin).
 
-The usual loader's combo is the [`html-loader`](https://github.com/webpack-contrib/html-loader) with the [`file-loader`](https://github.com/webpack-contrib/file-loader) (`html-webpack-inline-svg-plugin` does not support yet webpack v5 [asset modules](https://webpack.js.org/guides/asset-modules)). By default `html-webpack-plugin` uses an [`ejs` loader](https://github.com/jantimon/html-webpack-plugin/blob/main/docs/template-option.md) if no loader is provided for the entry template. This default loader does not handle file imports. That is why we need the `html-loader` to parse the entry HTML template, loader that will fire an import event every time it parses a JavaScript, CSS or image import. Then, the `file-loader` will handle SVG image imports, webpack aliases, and finally copy the SVG files to the `output` folder.
+The usual loader's combo is the [`html-loader`](https://github.com/webpack-contrib/html-loader) with the [`file-loader`](https://github.com/webpack-contrib/file-loader) (`html-webpack-inline-svg-plugin` does not support yet webpack v5 [asset modules](https://webpack.js.org/guides/asset-modules)). By default html-webpack-plugin uses an [`ejs` loader](https://github.com/jantimon/html-webpack-plugin/blob/main/docs/template-option.md) if no loader is provided for the entry template. This default loader does not handle file imports. That is why we need the `html-loader` to parse the entry HTML template, loader that will fire an import event every time it parses a JavaScript, CSS or image import. Then, the `file-loader` will handle SVG image imports, **webpack aliases**, and finally copy the SVG files to the `output` folder.
 
 Although SVG file paths are relative to the source template the files still need to be copied/emitted to the output folder (which will be done automatically by the `file-loader`):
 
@@ -163,7 +167,7 @@ const path = require('path')
 
 resolve: {
   alias: {
-  'a': path.join(__dirname, 'assets')
+    a: path.join(__dirname, 'assets') // With paths relative to SOURCE aliases can be used
   }
 },
 module: {
@@ -223,7 +227,7 @@ The broswer will use `id="myImageIMG"` and not `id="myImageSVG"`. It's however a
 
 [Paths relative to SOURCE](#relative-to-source) is the simpler method for [`webpack-dev-server`](https://github.com/webpack/webpack-dev-server) to work with `html-webpack-inline-svg-plugin` because source files, files that are not in the output folder, are the ones referenced. Still, the `file-loader`'s [`emitFile`](https://v4.webpack.js.org/loaders/file-loader/#emitfile) option cannot ever be `false`.
 
-[Paths relative to OUTPUT](#relative-to-output) or [Paths relative to ROOT](#relative-to-root) can also be used for `webpack-dev-server` as long as they point to SVG files that already exist without the need of a webpack run, that is it, files that are outside the output folder. However using long relative paths without aliases to point to such files could be a bit tedious.
+[Paths relative to OUTPUT](#relative-to-output) or [Paths relative to ROOT](#relative-to-root) can also be used for `webpack-dev-server` as long as they point to SVG files that already exist without the need of a webpack run, that is it, files that are outside the output folder. However using long relative paths to point to such files –since aliases are only available with paths relative to SOURCE– could be a bit tedious.
 
 
 
@@ -249,7 +253,7 @@ plugins: [
 ]
 ```
 
-The plugin will now run prior to `html-webpack-plugin` saving templates to the output directory. Therefore, inlining SVG files would look like:
+The plugin will now run prior to html-webpack-plugin saving templates to the output directory. Therefore, inlining SVG files would look like:
 
 ```html
 <!-- src/entry.html -->
@@ -338,17 +342,17 @@ plugins: [
 
 ## Versions
 
-The latest version of this package supports webpack 4. All versions marked v2.x.x will target webpack 4 and `html-webpack-plugin` v4.
+The latest version of this package supports webpack 4. All versions marked v2.x.x will target webpack 4 and html-webpack-plugin v4.
 
-For webpack 3 and `html-webpack-plugin` v3 support use v1.3.0 of this package.
+For webpack 3 and html-webpack-plugin v3 support use v1.3.0 of this package.
 
 ### v2.x.x
 - Support webpack v4.
-- Support `html-webpack-plugin` v4.
+- Support html-webpack-plugin v4.
 
 ### v1.3.0
 - Support webpack v3.
-- Support `html-webpack-plugin` v3.
+- Support html-webpack-plugin v3.
 
 
 ## Contributors
