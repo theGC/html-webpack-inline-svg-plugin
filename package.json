@@ -33,10 +33,10 @@
         "axios-mock-adapter": "^1.18.2",
         "file-loader": "^6.0.0",
         "html-loader": "^1.1.0",
-        "html-webpack-plugin": "^4.3.0",
+        "html-webpack-plugin": "^5.5.0",
         "jasmine": "^3.6.1",
         "rimraf": "^3.0.2",
-        "webpack": "^4.44.1"
+        "webpack": "^5.75.0"
     },
     "dependencies": {
         "axios": "^0.19.2",
